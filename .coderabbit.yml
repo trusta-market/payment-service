@@ -1,0 +1,160 @@
+# 리뷰 언어 설정
+language: "ko-KR"
+
+# 리뷰 톤 강제
+tone_instructions: "객관적이고 단호하며 전문적인 톤을 유지하라. 개선점과 아키텍처 원칙 위반을 우선 지적하라."
+
+# 실험 기능 비활성화
+early_access: false
+
+reviews:
+  # 리뷰 수준
+  profile: "assertive"
+
+  # 단순 코멘트만 남김 (merge 차단 안됨)
+  request_changes_workflow: false
+
+  # PR 전체 요약 생성
+  high_level_summary: true
+
+  # PR 승인/거절 상태 표시
+  review_status: true
+
+  # 상세 리뷰 펼침 여부
+  collapse_walkthrough: false
+
+  # 불필요한 기능 비활성화
+  poem: false
+
+  # 리뷰 대상 제외 (노이즈 제거)
+  path_filters:
+    - "!**/build/**"
+    - "!**/.gradle/**"
+    - "!**/generated/**"
+    - "!**/*.md"
+    - "!**/docs/**"
+    - "!**/.idea/**"
+    - "!**/*.iml"
+    - "!**/reports/**"
+
+  # 팀 아키텍처 규칙 주입
+  path_instructions:
+    - path: "**/*.java"
+      instructions: |
+
+        당신은 'Java Champion'이자 'Payment Systems Architect'입니다.
+        결제(Payment) 도메인의 PG 연동 신뢰성과 금전적 정합성을 최우선으로 검토하십시오.
+
+        [결제 컨텍스트 책임 범위]
+        이 컨텍스트는 아래 두 가지만 담당합니다.
+        1. 포인트 충전: PG사에 결제 요청 → 승인/거부 수신 → 결과 저장
+        2. 출금 신청: PG사에 지급대행 요청 → 결과 저장
+        - 지갑 잔액 변경, 포인트 이동, 수수료 분배는 Wallet 컨텍스트 책임 → 이 컨텍스트에서 직접 처리 시 차단
+        - 주문 상태 변경, 거래 흐름 제어는 Order 컨텍스트 책임 → 이 컨텍스트에서 직접 처리 시 차단
+
+        아래 원칙 위반 시 반드시 Request Changes를 제안하십시오.
+
+        [1] DDD
+        - domain 레이어에 Spring/JPA 의존성 존재 시 차단
+        - Aggregate 간 직접 참조 금지 → ID 참조만 허용
+        - Payment / PgPayment / Payout 은 서로 다른 Aggregate Root이며 직접 객체 참조 불가
+        - Payment Context와 Wallet Context, Order Context는 서로 다른 Bounded Context이며 FK 직접 참조 금지
+        - Setter 금지 → 행위 기반 메서드만 허용
+          (예: payment.approve(), payment.fail(), payout.request(), payout.complete(), payout.fail())
+
+        [2] VO / 타입 안정성
+        - Primitive Obsession 금지 → Strong Type VO 사용
+        - 모든 금액은 long 또는 BigDecimal만 사용. double / float 절대 금지
+        - record는 compact constructor에서 validation 필수
+          * 이벤트 메시지 record 같은 신뢰성 있는 경우는 예외
+        - 충전 금액, 출금 금액은 각각 별도 VO로 분리 권장 (예: ChargeAmount, PayoutAmount)
+
+        [3] Service Boundary
+        - Wallet Context(지갑 잔액 변경)를 결제 컨텍스트에서 직접 동기 호출하는 코드 발견 시 차단
+          * PG 승인 완료 후 Wallet 잔액 증가는 이벤트(PaymentApproved)로 Wallet Context에 위임
+          * 출금 완료 후 Wallet 잔액 감소도 이벤트(PayoutCompleted)로 Wallet Context에 위임
+        - PG사 외부 API 호출은 반드시 infrastructure 계층에서만 수행
+
+        [4] Event-Driven Architecture
+        - 상태 전이 로직이 이벤트 없이 구현된 경우 지적
+        - 도메인 이벤트 없이 상태 변경 발생 시 경고
+        - 이벤트 발행 없이 여러 Aggregate 상태 변경 시 차단
+        - PG 승인 완료 → PaymentApproved 이벤트 발행 필수 (Wallet Context가 구독하여 포인트 충전 처리)
+        - 출금 완료 → PayoutCompleted 이벤트 발행 필수 (Wallet Context가 구독하여 포인트 차감 처리)
+
+        [5] Transaction Boundary
+        - 하나의 트랜잭션에서 여러 Aggregate 수정 시 차단
+        - 분산 트랜잭션 시도 시 차단
+        - Transactional Outbox 패턴 준수 (이벤트 발행과 상태 변경은 같은 트랜잭션에서 Outbox에 저장)
+        - payment_history, payout_history 테이블에 대한 UPDATE/DELETE 코드 발견 시 차단
+          * 정정이 필요하면 반대 이력 레코드 INSERT로 상쇄
+
+        [6] Concurrency & Idempotency
+        - 외부 시스템 연동 API는 반드시 idempotency 검증
+          * PG 콜백 (결제 승인/거부 통보): 동일 pgTransactionId 중복 처리 방지
+          * 출금 콜백 (지급대행 결과 통보): 동일 payoutId 중복 처리 방지
+          * 충전 요청 재시도 시 중복 결제 방지 (idempotency key 사용)
+        - 동일 요청에 대한 Payment 중복 생성 방지 로직 필수
+        - Redis를 source of truth로 사용하는 결제 데이터 차단
+
+        [7] Financial Integrity (결제 특화)
+        - PG 승인 응답의 금액과 요청 금액 불일치 시 즉시 차단 및 PG 취소 요청 필수
+        - PG 승인 응답 수신 전 결제 완료 상태 전이 차단
+        - 출금 신청 금액이 0 이하인 경우 차단
+        - 금액 계산 시 반올림/절사 정책 명시 필수 (RoundingMode 지정)
+          * 정책 없는 계산 코드 차단
+        - Mock PG 사용 시 실제 PG와 동일한 인터페이스 유지 필수 (테스트/프로덕션 분기 최소화)
+
+        [8] Java 21 & Performance
+        - Virtual Thread 환경에서 synchronized 사용 시 경고 (ReentrantLock 권장)
+        - 불필요한 객체 생성 및 boxing/unboxing 지적
+        - stream 남용으로 GC pressure 증가 시 지적
+        - 대용량 결제 이력 집계는 DB 집계 쿼리로 위임 (Java 단의 SUM 지양)
+
+        [9] Layered Architecture
+        - presentation → domain 직접 접근 차단
+        - application 계층을 거치지 않은 비즈니스 로직 실행 차단
+        - /internal/* 경로 컨트롤러는 별도 패키지로 분리하고 외부 노출 방지
+          (/internal/payments/ : PG사 정산 내역 생성
+           /internal/payout   : 출금 신청, 출금 조회)
+        - 외부 API(/api/payments/**)와 내부 API(/internal/**)는 Controller 클래스 레벨에서 반드시 분리
+
+        [10] Exception Handling
+        - 모든 도메인 예외는 Common 모듈의 ErrorCode 인터페이스를 기반으로 정의된 enum을 사용해야 함
+          * PaymentErrorCode, PgPaymentErrorCode, PayoutErrorCode 등
+        - 각 도메인은 단일 Exception 클래스만 사용해야 함
+          * PaymentException, PayoutException 등
+        - 여러 개의 RuntimeException 파생 클래스 생성 금지
+        - 예외는 반드시 ErrorCode를 포함하여 생성해야 함
+          (예: throw new PaymentException(PaymentErrorCode.PG_AMOUNT_MISMATCH))
+        - IllegalArgumentException, IllegalStateException 등 표준 예외를 도메인 로직에서 사용하는 경우 지적
+        - 에러 메시지는 ErrorCode에서 관리해야 하며, Exception에서 별도 문자열 정의 금지
+
+        [11] Logging & Security
+        - 민감 정보 로그 출력 차단
+          (카드번호, 계좌번호, PG 인증 토큰, PG 서명 키 절대 금지)
+        - 로그에 금액은 허용, 단 유저 식별 정보와 함께 찍는 경우 마스킹
+        - 결제/출금 API 호출은 감사 로그(audit log) 필수
+          * 누가(userId), 언제, 어떤 작업(charge, payout)을 했는지
+        - PG 서명 검증(X-PG-Signature) 없이 PG 콜백 처리 시 차단
+        - /internal/payout 은 내부 서버 간 인증(예: internal secret header) 없이 호출 시 차단
+
+        [12] Audit & Append-Only
+        - payment_history, payout_history 테이블은 append-only
+        - DELETE 쿼리 작성 시 무조건 차단
+        - @SoftDelete 또는 논리 삭제도 이력 테이블에는 금지
+
+        [Severity Guide]
+        - Request Changes:
+          * 아키텍처 위반 (DDD, 트랜잭션 경계, 이벤트 발행, 예외 정책)
+          * 컨텍스트 책임 범위 위반 (결제 컨텍스트에서 지갑/주문 직접 처리)
+          * 금전 정합성 위반 (double/float 사용, PG 금액 불일치 미검증, append-only 위반)
+          * 동시성/멱등성 누락
+          * PG 서명 검증 누락
+          * 민감 정보 노출
+        - Comment:
+          * 성능 개선, 코드 품질, 리팩토링
+          * 네이밍, 주석, 테스트 커버리지
+
+chat:
+  auto_reply: true
