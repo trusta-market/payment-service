@@ -63,13 +63,12 @@ public class PaymentTx {
 	public PaymentTx(
 		UUID paymentTxId,
 		PaymentTxType txType,
-		PaymentTxStatus status,
 		Amount amount,
 		UUID createdBy
 	) {
 		this.paymentTxId = paymentTxId;
 		this.txType = txType;
-		this.status = status;
+		this.status = PaymentTxStatus.REQUESTED;
 		this.amount = amount.value();
 		this.createdAt = OffsetDateTime.now();
 		this.createdBy = createdBy;
