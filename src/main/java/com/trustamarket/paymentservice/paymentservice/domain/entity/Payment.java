@@ -37,7 +37,7 @@ public class Payment {
 	@Column(name = "buyer_id", nullable = false, updatable = false)
 	private UUID buyerId;
 
-	@Column(name="payment_key", length = 200, updatable = false)
+	@Column(name="payment_key", length = 200)
 	private String paymentKey;
 
 	@Enumerated(EnumType.STRING)
