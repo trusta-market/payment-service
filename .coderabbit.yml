@@ -55,7 +55,6 @@ reviews:
         아래 원칙 위반 시 반드시 Request Changes를 제안하십시오.
 
         [1] DDD
-        - domain 레이어에 Spring/JPA 의존성 존재 시 차단
         - Aggregate 간 직접 참조 금지 → ID 참조만 허용
         - Payment / PgPayment / Payout 은 서로 다른 Aggregate Root이며 직접 객체 참조 불가
         - Payment Context와 Wallet Context, Order Context는 서로 다른 Bounded Context이며 FK 직접 참조 금지
