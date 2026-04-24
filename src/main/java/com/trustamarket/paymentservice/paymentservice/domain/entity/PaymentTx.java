@@ -76,6 +76,9 @@ public class PaymentTx {
 	}
 
 	public void success(String pgTxId, String pgResponseCode, String pgResponseMessage, UUID updatedBy) {
+		if(this.status != PaymentTxStatus.REQUESTED){
+			throw new IllegalStateException("결제 상태 전이 오류");
+		}
 		this.status = PaymentTxStatus.SUCCESS;
 		this.pgTxId = pgTxId;
 		this.pgResponseCode = pgResponseCode;
@@ -84,11 +87,18 @@ public class PaymentTx {
 	}
 
 	public void fail(String pgTxId, String pgResponseCode, String pgResponseMessage, UUID updatedBy) {
+		if(this.status != PaymentTxStatus.REQUESTED){
+			throw new IllegalStateException("결제 상태 전이 오류");
+		}
 		this.status = PaymentTxStatus.FAILED;
 		this.pgTxId = pgTxId;
 		this.pgResponseCode = pgResponseCode;
 		this.pgResponseMessage = pgResponseMessage;
 		updateInfo(updatedBy);
+	}
+
+	public void assignPayment(Payment payment) {
+		this.payment = payment;
 	}
 
 	private void updateInfo(UUID updatedBy) {

@@ -95,6 +95,7 @@ public class Payment {
 
 	public void addTransaction(PaymentTx transaction) {
 		this.transactions.add(transaction);
+		transaction.assignPayment(this);
 	}
 
 	private void updateInfo(UUID updatedBy) {
