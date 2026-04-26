@@ -1,6 +1,7 @@
 package com.trustamarket.paymentservice.paymentservice.domain.entity;
 
 import com.trustamarket.paymentservice.paymentservice.domain.enums.PaymentTxType;
+import com.trustamarket.paymentservice.paymentservice.domain.vo.Amount;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -51,19 +52,19 @@ public class PaymentTx {
 	private Instant createdAt;
 
 	public static PaymentTx createRequest(
-			long amount
+			Amount amount
 	) {
 		PaymentTx tx = new PaymentTx();
 
 		tx.paymentTxId = UUID.randomUUID();
 		tx.txType = PaymentTxType.REQUESTED;
-		tx.amount = amount;
+		tx.amount = amount.value();
 		tx.createdAt = Instant.now();
         return tx;
     }
 
 	public static PaymentTx createSuccess(
-			long amount,
+			Amount amount,
 			String paymentKey
 
 	) {
@@ -71,14 +72,14 @@ public class PaymentTx {
 
 		tx.paymentTxId = UUID.randomUUID();
 		tx.txType = PaymentTxType.SUCCESS;
-		tx.amount = amount;
+		tx.amount = amount.value();
 		tx.paymentKey = paymentKey;
 		tx.createdAt = Instant.now();
 		return tx;
 	}
 
 	public static PaymentTx createFail(
-			long amount,
+			Amount amount,
 			String pgResponseCode,
 			String pgResponseMessage
 	) {
@@ -86,7 +87,7 @@ public class PaymentTx {
 
 		tx.paymentTxId = UUID.randomUUID();
 		tx.txType = PaymentTxType.FAILED;
-		tx.amount = amount;
+		tx.amount = amount.value();
 		tx.pgResponseCode = pgResponseCode;
 		tx.pgResponseMessage = pgResponseMessage;
 		tx.createdAt = Instant.now();

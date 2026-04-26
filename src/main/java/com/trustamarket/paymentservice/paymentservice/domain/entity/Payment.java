@@ -66,7 +66,7 @@ public class Payment {
 		payment.amount = amount.value();
 		payment.createdAt = Instant.now();
 
-		payment.addTransaction(PaymentTx.createRequest(amount.value()));
+		payment.addTransaction(PaymentTx.createRequest(amount));
 		return payment;
 	}
 
@@ -78,7 +78,7 @@ public class Payment {
 		this.paymentKey = paymentKey;
 		this.updatedAt = Instant.now();
 
-		this.addTransaction(PaymentTx.createSuccess(this.amount, paymentKey));
+		this.addTransaction(PaymentTx.createSuccess(Amount.of(amount), paymentKey));
 	}
 
 	public void failPayment(String pgCode,  String pgMessage) {
@@ -88,7 +88,7 @@ public class Payment {
 		this.paymentStatus = PaymentStatus.FAILED;
 		this.updatedAt = Instant.now();
 
-		this.addTransaction(PaymentTx.createFail(this.amount, pgCode, pgMessage));
+		this.addTransaction(PaymentTx.createFail(Amount.of(amount), pgCode, pgMessage));
 	}
 
 	private void addTransaction(PaymentTx transaction) {
