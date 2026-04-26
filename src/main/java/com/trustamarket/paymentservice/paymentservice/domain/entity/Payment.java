@@ -70,15 +70,19 @@ public class Payment {
 		return payment;
 	}
 
-	public void successPayment(String paymentKey) {
+	public void successPayment(String paymentKey, long approvedAmount) {
 		if(this.paymentStatus != PaymentStatus.REQUESTED){
 			throw new IllegalStateException("결제 상태 전이 오류");
 		}
+		if (approvedAmount != this.amount) {
+			throw new IllegalStateException("PG 승인 금액 불일치");
+		}
+
 		this.paymentStatus = PaymentStatus.SUCCESS;
 		this.paymentKey = paymentKey;
 		this.updatedAt = Instant.now();
 
-		this.addTransaction(PaymentTx.createSuccess(Amount.of(amount), paymentKey));
+		this.addTransaction(PaymentTx.createSuccess(Amount.of(approvedAmount), paymentKey));
 	}
 
 	public void failPayment(String pgCode,  String pgMessage) {
