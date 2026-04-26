@@ -1,13 +1,7 @@
 package com.trustamarket.paymentservice.paymentservice.domain.entity;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import com.trustamarket.paymentservice.paymentservice.domain.enums.PaymentStatus;
 import com.trustamarket.paymentservice.paymentservice.domain.vo.Amount;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,6 +15,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 @Getter
 @Entity
 @Table(name = "p_payments")
@@ -30,12 +29,6 @@ public class Payment {
 	@Id
 	@Column(name = "payment_id", nullable = false, updatable = false)
 	private UUID paymentId;
-
-	@Column(name = "order_id", nullable = false, updatable = false)
-	private UUID orderId;
-
-	@Column(name = "buyer_id", nullable = false, updatable = false)
-	private UUID buyerId;
 
 	@Column(name="payment_key", length = 200)
 	private String paymentKey;
@@ -52,54 +45,54 @@ public class Payment {
 	private Integer version;
 
 	@Column(name = "created_at", nullable = false, updatable = false)
-	private OffsetDateTime createdAt;
+	private Instant createdAt;
 
 	@Column(name = "created_by")
 	private UUID createdBy;
 
 	@Column(name = "updated_at")
-	private OffsetDateTime updatedAt;
-
-	@Column(name = "updated_by")
-	private UUID updatedBy;
+	private Instant updatedAt;
 
 	@OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<PaymentTx> transactions = new ArrayList<>();
 
-	public Payment(
-		UUID paymentId,
-		UUID orderId,
-		UUID buyerId,
-		Amount amount,
-		UUID createdBy
+	public static Payment create(
+			Amount amount
 	) {
-		this.paymentId = paymentId;
-		this.orderId = orderId;
-		this.buyerId = buyerId;
-		this.paymentStatus = PaymentStatus.REQUESTED;
-		this.amount = amount.value();
-		this.createdAt = OffsetDateTime.now();
-		this.createdBy = createdBy;
+		Payment payment = new Payment();
+
+		payment.paymentId = UUID.randomUUID();
+		payment.paymentStatus = PaymentStatus.REQUESTED;
+		payment.amount = amount.value();
+		payment.createdAt = Instant.now();
+
+		payment.addTransaction(PaymentTx.createRequest(amount.value()));
+		return payment;
 	}
 
-	public void successPayment(UUID updatedBy, String paymentKey) {
+	public void successPayment(String paymentKey) {
+		if(this.paymentStatus != PaymentStatus.REQUESTED){
+			throw new IllegalStateException("결제 상태 전이 오류");
+		}
 		this.paymentStatus = PaymentStatus.SUCCESS;
 		this.paymentKey = paymentKey;
-		updateInfo(updatedBy);
+		this.updatedAt = Instant.now();
+
+		this.addTransaction(PaymentTx.createSuccess(this.amount, paymentKey));
 	}
 
-	public void failPayment(UUID updatedBy) {
+	public void failPayment(String pgCode,  String pgMessage) {
+		if(this.paymentStatus != PaymentStatus.REQUESTED){
+			throw new IllegalStateException("결제 상태 전이 오류");
+		}
 		this.paymentStatus = PaymentStatus.FAILED;
-		updateInfo(updatedBy);
+		this.updatedAt = Instant.now();
+
+		this.addTransaction(PaymentTx.createFail(this.amount, pgCode, pgMessage));
 	}
 
-	public void addTransaction(PaymentTx transaction) {
+	private void addTransaction(PaymentTx transaction) {
 		this.transactions.add(transaction);
 		transaction.assignPayment(this);
-	}
-
-	private void updateInfo(UUID updatedBy) {
-		this.updatedAt = OffsetDateTime.now();
-		this.updatedBy = updatedBy;
 	}
 }
