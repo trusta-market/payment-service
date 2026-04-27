@@ -30,6 +30,9 @@ public class Payment {
 	@Column(name = "payment_id", nullable = false, updatable = false)
 	private UUID paymentId;
 
+	@Column(name = "charge_id", nullable = false, updatable = false, unique = true)
+	private UUID chargeId;
+
 	@Column(name="payment_key", length = 200)
 	private String paymentKey;
 

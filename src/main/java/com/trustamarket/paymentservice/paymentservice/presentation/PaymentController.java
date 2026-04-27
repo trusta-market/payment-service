@@ -21,12 +21,13 @@ public class PaymentController {
 
     @PostMapping
     public ResponseEntity<CreatePaymentResponse> createPayment(@RequestBody CreatePaymentRequest request) {
-        CreatePaymentCommand command = new CreatePaymentCommand(request.amount());
+        CreatePaymentCommand command = new CreatePaymentCommand(request.chargeId(), request.amount());
 
         CreatePaymentResult result = paymentUseCase.createPayment(command);
 
         CreatePaymentResponse response = new CreatePaymentResponse(
                 result.paymentId(),
+                result.chargeId(),
                 result.paymentStatus().name(),
                 result.amount(),
                 result.createdAt()

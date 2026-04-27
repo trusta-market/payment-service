@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public record CreatePaymentResult (
     UUID paymentId,
+    UUID chargeId,
     PaymentStatus paymentStatus,
     long amount,
     Instant createdAt

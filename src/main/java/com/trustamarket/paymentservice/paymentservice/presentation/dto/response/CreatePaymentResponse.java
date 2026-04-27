@@ -5,6 +5,7 @@ import java.util.UUID;
 
 public record CreatePaymentResponse (
         UUID paymentId,
+        UUID chargeId,
         String paymentStatus,
         long amount,
         Instant createdAt
