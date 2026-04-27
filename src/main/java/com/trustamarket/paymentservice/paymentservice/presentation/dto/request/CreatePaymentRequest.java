@@ -1,3 +1,7 @@
 package com.trustamarket.paymentservice.paymentservice.presentation.dto.request;
 
-public record CreatePaymentRequest (long amount) {}
+import jakarta.validation.constraints.Positive;
+
+public record CreatePaymentRequest (
+        @Positive long amount
+) {}
