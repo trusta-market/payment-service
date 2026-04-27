@@ -53,7 +53,7 @@ public class Payment {
 	@Column(name = "updated_at")
 	private Instant updatedAt;
 
-	@OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "payment", cascade = CascadeType.PERSIST)
 	private List<PaymentTx> transactions = new ArrayList<>();
 
 	public static Payment create(
