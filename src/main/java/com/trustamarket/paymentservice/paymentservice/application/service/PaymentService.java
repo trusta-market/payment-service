@@ -19,7 +19,7 @@ public class PaymentService implements PaymentUseCase {
     @Override
     @Transactional
     public CreatePaymentResult createPayment(CreatePaymentCommand command) {
-        Payment payment = Payment.create(chargeId, Amount.of(command.amount()));
+        Payment payment = Payment.create(command.chargeId(), Amount.of(command.amount()));
 
         Payment savedPayment = paymentRepository.save(payment);
 

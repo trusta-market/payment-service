@@ -60,11 +60,13 @@ public class Payment {
 	private List<PaymentTx> transactions = new ArrayList<>();
 
 	public static Payment create(
+			UUID chargeId,
 			Amount amount
 	) {
 		Payment payment = new Payment();
 
 		payment.paymentId = UUID.randomUUID();
+		payment.chargeId = chargeId;
 		payment.paymentStatus = PaymentStatus.REQUESTED;
 		payment.amount = amount.value();
 		payment.createdAt = Instant.now();
