@@ -1,6 +1,7 @@
 package com.trustamarket.paymentservice.paymentservice.domain.entity;
 
 import com.trustamarket.common.domain.BaseCreatedEntity;
+import com.trustamarket.common.domain.BaseTimeEntity;
 import com.trustamarket.paymentservice.paymentservice.domain.enums.PaymentStatus;
 import com.trustamarket.paymentservice.paymentservice.domain.vo.Amount;
 import jakarta.persistence.CascadeType;
@@ -24,7 +25,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_payments")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Payment extends BaseCreatedEntity {
+public class Payment extends BaseTimeEntity {
 
 	@Id
 	@Column(name = "payment_id", nullable = false, updatable = false)
@@ -64,6 +65,7 @@ public class Payment extends BaseCreatedEntity {
 		payment.addTransaction(PaymentTx.createRequest(amount));
 		return payment;
 	}
+
 
 	public void successPayment(String paymentKey, long approvedAmount) {
 		if(this.paymentStatus != PaymentStatus.REQUESTED){
