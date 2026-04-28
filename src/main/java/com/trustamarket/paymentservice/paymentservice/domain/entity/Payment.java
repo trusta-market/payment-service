@@ -3,6 +3,8 @@ package com.trustamarket.paymentservice.paymentservice.domain.entity;
 import com.trustamarket.common.domain.BaseCreatedEntity;
 import com.trustamarket.common.domain.BaseTimeEntity;
 import com.trustamarket.paymentservice.paymentservice.domain.enums.PaymentStatus;
+import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentErrorCode;
+import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentException;
 import com.trustamarket.paymentservice.paymentservice.domain.vo.Amount;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -69,10 +71,10 @@ public class Payment extends BaseTimeEntity {
 
 	public void successPayment(String paymentKey, long approvedAmount) {
 		if(this.paymentStatus != PaymentStatus.REQUESTED){
-			throw new IllegalStateException("결제 상태 전이 오류");
+			throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_STATUS);
 		}
 		if (approvedAmount != this.amount) {
-			throw new IllegalStateException("PG 승인 금액 불일치");
+			throw new PaymentException(PaymentErrorCode.PAYMENT_AMOUNT_MISMATCH);
 		}
 
 		this.paymentStatus = PaymentStatus.SUCCESS;
@@ -83,7 +85,7 @@ public class Payment extends BaseTimeEntity {
 
 	public void failPayment(String pgCode,  String pgMessage) {
 		if(this.paymentStatus != PaymentStatus.REQUESTED){
-			throw new IllegalStateException("결제 상태 전이 오류");
+			throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_STATUS);
 		}
 		this.paymentStatus = PaymentStatus.FAILED;
 
