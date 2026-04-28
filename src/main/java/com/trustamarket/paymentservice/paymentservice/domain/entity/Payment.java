@@ -1,5 +1,6 @@
 package com.trustamarket.paymentservice.paymentservice.domain.entity;
 
+import com.trustamarket.common.domain.BaseCreatedEntity;
 import com.trustamarket.paymentservice.paymentservice.domain.enums.PaymentStatus;
 import com.trustamarket.paymentservice.paymentservice.domain.vo.Amount;
 import jakarta.persistence.CascadeType;
@@ -15,7 +16,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -24,7 +24,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_payments")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Payment {
+public class Payment extends BaseCreatedEntity {
 
 	@Id
 	@Column(name = "payment_id", nullable = false, updatable = false)
@@ -47,15 +47,6 @@ public class Payment {
 	@Column(name = "version", nullable = false)
 	private Integer version;
 
-	@Column(name = "created_at", nullable = false, updatable = false)
-	private Instant createdAt;
-
-	@Column(name = "created_by")
-	private UUID createdBy;
-
-	@Column(name = "updated_at")
-	private Instant updatedAt;
-
 	@OneToMany(mappedBy = "payment", cascade = CascadeType.PERSIST)
 	private List<PaymentTx> transactions = new ArrayList<>();
 
@@ -69,7 +60,6 @@ public class Payment {
 		payment.chargeId = chargeId;
 		payment.paymentStatus = PaymentStatus.REQUESTED;
 		payment.amount = amount.value();
-		payment.createdAt = Instant.now();
 
 		payment.addTransaction(PaymentTx.createRequest(amount));
 		return payment;
@@ -85,7 +75,6 @@ public class Payment {
 
 		this.paymentStatus = PaymentStatus.SUCCESS;
 		this.paymentKey = paymentKey;
-		this.updatedAt = Instant.now();
 
 		this.addTransaction(PaymentTx.createSuccess(Amount.of(approvedAmount), paymentKey));
 	}
@@ -95,7 +84,6 @@ public class Payment {
 			throw new IllegalStateException("결제 상태 전이 오류");
 		}
 		this.paymentStatus = PaymentStatus.FAILED;
-		this.updatedAt = Instant.now();
 
 		this.addTransaction(PaymentTx.createFail(Amount.of(amount), pgCode, pgMessage));
 	}
