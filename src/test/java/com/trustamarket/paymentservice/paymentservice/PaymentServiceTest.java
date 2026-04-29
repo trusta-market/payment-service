@@ -52,7 +52,7 @@ class PaymentServiceTest {
 
             Payment payment = Payment.create(chargeId, Amount.of(amount));
             given(paymentRepository.existsByChargeId(chargeId)).willReturn(false);
-            given(paymentRepository.save(any(Payment.class))).willReturn(payment);
+            given(paymentRepository.saveAndFlush(any(Payment.class))).willReturn(payment);
 
             // when
             CreatePaymentResult result = paymentService.createPayment(command);
@@ -61,7 +61,7 @@ class PaymentServiceTest {
             assertThat(result.chargeId()).isEqualTo(chargeId);
             assertThat(result.amount()).isEqualTo(amount);
             assertThat(result.paymentStatus()).isEqualTo(PaymentStatus.REQUESTED);
-            verify(paymentRepository).save(any(Payment.class));
+            verify(paymentRepository).saveAndFlush(any(Payment.class));
         }
 
         @Test
@@ -98,7 +98,7 @@ class PaymentServiceTest {
             UUID chargeId = UUID.randomUUID();
             CreatePaymentCommand command = new CreatePaymentCommand(chargeId, 10000L);
             given(paymentRepository.existsByChargeId(chargeId)).willReturn(false);
-            given(paymentRepository.save(any(Payment.class))).willThrow(new RuntimeException("DB 저장 실패"));
+            given(paymentRepository.saveAndFlush(any(Payment.class))).willThrow(new RuntimeException("DB 저장 실패"));
 
             // when & then
             assertThatThrownBy(() -> paymentService.createPayment(command))
