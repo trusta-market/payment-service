@@ -13,6 +13,7 @@ import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentEx
 import com.trustamarket.paymentservice.paymentservice.domain.repository.PaymentRepository;
 import com.trustamarket.paymentservice.paymentservice.domain.vo.Amount;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,21 +26,21 @@ public class PaymentService implements PaymentUseCase {
     @Override
     @Transactional
     public CreatePaymentResult createPayment(CreatePaymentCommand command) {
-        if (paymentRepository.existsByChargeId(command.chargeId())) {
+        try{
+            Payment payment = Payment.create(command.chargeId(), Amount.of(command.amount()));
+            Payment savedPayment = paymentRepository.saveandFlush(payment);
+
+            return new CreatePaymentResult(
+                    savedPayment.getPaymentId(),
+                    savedPayment.getChargeId(),
+                    savedPayment.getPaymentStatus(),
+                    savedPayment.getAmount(),
+                    savedPayment.getCreatedAt()
+            );
+
+        }catch (DataIntegrityViolationException e){
             throw new PaymentException(PaymentErrorCode.DUPLICATE_CHARGE_ID);
         }
-
-        Payment payment = Payment.create(command.chargeId(), Amount.of(command.amount()));
-
-        Payment savedPayment = paymentRepository.save(payment);
-
-        return new CreatePaymentResult(
-                savedPayment.getPaymentId(),
-                savedPayment.getChargeId(),
-                savedPayment.getPaymentStatus(),
-                savedPayment.getAmount(),
-                savedPayment.getCreatedAt()
-        );
     }
 
     @Override
