@@ -12,6 +12,7 @@ import com.trustamarket.paymentservice.paymentservice.presentation.dto.request.C
 import com.trustamarket.paymentservice.paymentservice.presentation.dto.response.CreatePaymentResponse;
 import com.trustamarket.paymentservice.paymentservice.presentation.dto.response.FailPaymentResponse;
 import com.trustamarket.paymentservice.paymentservice.presentation.dto.response.SucceededPaymentResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +32,7 @@ public class PaymentController {
     private final PaymentUseCase paymentUseCase;
 
     @PostMapping
-    public CommonResponse<CreatePaymentResponse> createPayment(@RequestBody CreatePaymentRequest request) {
+    public CommonResponse<CreatePaymentResponse> createPayment(@Valid @RequestBody CreatePaymentRequest request) {
         CreatePaymentCommand command = new CreatePaymentCommand(request.chargeId(), request.amount());
 
         CreatePaymentResult result = paymentUseCase.createPayment(command);
