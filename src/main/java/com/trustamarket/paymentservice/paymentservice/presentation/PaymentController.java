@@ -13,6 +13,8 @@ import com.trustamarket.paymentservice.paymentservice.presentation.dto.response.
 import com.trustamarket.paymentservice.paymentservice.presentation.dto.response.FailPaymentResponse;
 import com.trustamarket.paymentservice.paymentservice.presentation.dto.response.SucceededPaymentResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,8 +53,8 @@ public class PaymentController {
     @PostMapping("/{paymentId}/success")
     public CommonResponse<SucceededPaymentResponse> successPayment(
             @PathVariable UUID paymentId,
-            @RequestParam String paymentKey,
-            @RequestParam long amount
+            @RequestParam @NotBlank String paymentKey,
+            @RequestParam @Positive long amount
     ){
         SucceededPaymentCommand command = new SucceededPaymentCommand(paymentId, paymentKey, amount);
 
@@ -71,8 +73,8 @@ public class PaymentController {
     @PostMapping("/{paymentId}/failure")
     public CommonResponse<FailPaymentResponse> failPayment(
             @PathVariable UUID paymentId,
-            @RequestParam String code,
-            @RequestParam String message
+            @RequestParam @NotBlank String code,
+            @RequestParam @NotBlank String message
     ){
         FailPaymentCommand command = new FailPaymentCommand(paymentId, code, message);
 
