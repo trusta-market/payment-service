@@ -16,6 +16,7 @@ public record SucceededPaymentResult(
         return new SucceededPaymentResult(
                 payment.getPaymentId(),
                 payment.getPaymentStatus(),
+                payment.getAmount(),
                 payment.getUpdatedAt()
         );
     }
