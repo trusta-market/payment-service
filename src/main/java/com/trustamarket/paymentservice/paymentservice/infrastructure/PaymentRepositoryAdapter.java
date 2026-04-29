@@ -21,7 +21,7 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
     }
 
     @Override
-    public Payment saveandFlush(Payment payment) {
+    public Payment saveAndFlush(Payment payment) {
         return paymentJpaRepository.saveAndFlush(payment);
 
     }

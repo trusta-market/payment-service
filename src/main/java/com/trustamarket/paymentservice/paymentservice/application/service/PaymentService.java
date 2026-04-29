@@ -28,7 +28,7 @@ public class PaymentService implements PaymentUseCase {
     public CreatePaymentResult createPayment(CreatePaymentCommand command) {
         try{
             Payment payment = Payment.create(command.chargeId(), Amount.of(command.amount()));
-            Payment savedPayment = paymentRepository.saveandFlush(payment);
+            Payment savedPayment = paymentRepository.saveAndFlush(payment);
 
             return new CreatePaymentResult(
                     savedPayment.getPaymentId(),

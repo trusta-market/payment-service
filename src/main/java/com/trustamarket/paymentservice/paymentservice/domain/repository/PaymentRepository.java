@@ -6,6 +6,6 @@ import java.util.UUID;
 
 public interface PaymentRepository {
     boolean existsByChargeId(UUID chargeId);
-    Payment saveandFlush(Payment payment);
+    Payment saveAndFlush(Payment payment);
     Payment findById(UUID PaymentId);
 }
