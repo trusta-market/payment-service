@@ -30,13 +30,8 @@ public class PaymentService implements PaymentUseCase {
             Payment payment = Payment.create(command.chargeId(), Amount.of(command.amount()));
             Payment savedPayment = paymentRepository.saveAndFlush(payment);
 
-            return new CreatePaymentResult(
-                    savedPayment.getPaymentId(),
-                    savedPayment.getChargeId(),
-                    savedPayment.getPaymentStatus(),
-                    savedPayment.getAmount(),
-                    savedPayment.getCreatedAt()
-            );
+            CreatePaymentResult result = CreatePaymentResult.from(savedPayment);
+            return result;
 
         }catch (DataIntegrityViolationException e){
             throw new PaymentException(PaymentErrorCode.DUPLICATE_CHARGE_ID);
@@ -50,12 +45,8 @@ public class PaymentService implements PaymentUseCase {
 
         payment.successPayment(command.paymentKey(), command.amount());
 
-        return new SucceededPaymentResult(
-                payment.getPaymentId(),
-                payment.getPaymentStatus(),
-                payment.getAmount(),
-                payment.getUpdatedAt()
-        );
+        SucceededPaymentResult result = SucceededPaymentResult.from(payment);
+        return result;
     }
 
     @Override
@@ -65,10 +56,7 @@ public class PaymentService implements PaymentUseCase {
 
         payment.failPayment(command.code(), command.message());
 
-        return new FailPaymentResult(
-                payment.getPaymentId(),
-                payment.getPaymentStatus(),
-                payment.getUpdatedAt()
-        );
+        FailPaymentResult result = FailPaymentResult.from(payment);
+        return result;
     }
 }

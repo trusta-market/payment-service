@@ -1,5 +1,6 @@
 package com.trustamarket.paymentservice.paymentservice.application.dto.result;
 
+import com.trustamarket.paymentservice.paymentservice.domain.entity.Payment;
 import com.trustamarket.paymentservice.paymentservice.domain.enums.PaymentStatus;
 
 import java.time.Instant;
@@ -10,4 +11,12 @@ public record SucceededPaymentResult(
         PaymentStatus paymentStatus,
         long amount,
         Instant updatedAt
-){}
+){
+    public static SucceededPaymentResult from(Payment payment) {
+        return new SucceededPaymentResult(
+                payment.getPaymentId(),
+                payment.getPaymentStatus(),
+                payment.getUpdatedAt()
+        );
+    }
+}

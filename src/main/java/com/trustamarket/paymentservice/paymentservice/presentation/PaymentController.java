@@ -17,6 +17,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,20 +35,16 @@ public class PaymentController {
     private final PaymentUseCase paymentUseCase;
 
     @PostMapping
-    public CommonResponse<CreatePaymentResponse> createPayment(@Valid @RequestBody CreatePaymentRequest request) {
+    public ResponseEntity<CommonResponse<CreatePaymentResponse>> createPayment(@Valid @RequestBody CreatePaymentRequest request) {
         CreatePaymentCommand command = new CreatePaymentCommand(request.chargeId(), request.amount());
 
         CreatePaymentResult result = paymentUseCase.createPayment(command);
 
-        CreatePaymentResponse response = new CreatePaymentResponse(
-                result.paymentId(),
-                result.chargeId(),
-                result.paymentStatus().name(),
-                result.amount(),
-                result.createdAt()
-        );
+        CreatePaymentResponse response = CreatePaymentResponse.from(result);
 
-        return new CommonResponse<>(HttpStatus.CREATED.value(), response);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new CommonResponse<>(HttpStatus.CREATED.value(), response));
     }
 
     @PostMapping("/{paymentId}/success")
@@ -60,12 +57,7 @@ public class PaymentController {
 
         SucceededPaymentResult result = paymentUseCase.succeededPayment(command);
 
-        SucceededPaymentResponse response = new SucceededPaymentResponse(
-                result.paymentId(),
-                result.paymentStatus(),
-                result.amount(),
-                result.updatedAt()
-        );
+        SucceededPaymentResponse response = SucceededPaymentResponse.from(result);
 
         return new CommonResponse<>(HttpStatus.OK.value(), response);
     }
@@ -75,16 +67,12 @@ public class PaymentController {
             @PathVariable UUID paymentId,
             @RequestParam @NotBlank String code,
             @RequestParam @NotBlank String message
-    ){
+    ) {
         FailPaymentCommand command = new FailPaymentCommand(paymentId, code, message);
 
         FailPaymentResult result = paymentUseCase.failPayment(command);
 
-        FailPaymentResponse response = new FailPaymentResponse(
-                result.paymentId(),
-                result.paymentStatus(),
-                result.updatedAt()
-        );
+        FailPaymentResponse response = FailPaymentResponse.from(result);
 
         return new CommonResponse<>(HttpStatus.OK.value(), response);
     }
