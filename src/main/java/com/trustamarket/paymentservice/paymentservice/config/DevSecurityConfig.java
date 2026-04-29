@@ -17,7 +17,7 @@ public class DevSecurityConfig {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain devFilterChain(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher("/api/**") // ⭐ 전체 말고 API만!
+                .securityMatcher("/**")
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()
