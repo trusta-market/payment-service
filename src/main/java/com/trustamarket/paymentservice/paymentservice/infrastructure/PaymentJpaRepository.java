@@ -1,10 +1,10 @@
 package com.trustamarket.paymentservice.paymentservice.infrastructure;
 
-import java.util.UUID;
-
+import com.trustamarket.paymentservice.paymentservice.domain.entity.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.trustamarket.paymentservice.paymentservice.domain.entity.Payment;
+import java.util.UUID;
 
 public interface PaymentJpaRepository extends JpaRepository<Payment, UUID> {
+    boolean existsByChargeId(UUID chargeId);
 }
