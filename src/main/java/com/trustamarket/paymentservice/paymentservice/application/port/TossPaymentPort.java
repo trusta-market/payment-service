@@ -6,5 +6,5 @@ import java.util.UUID;
 
 public interface TossPaymentPort {
 
-    TossConfirmResult confirm(String paymentKey, UUID orderId, long amount);
+    TossConfirmResult confirm(String paymentKey, UUID paymentId, long amount);
 }

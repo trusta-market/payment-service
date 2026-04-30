@@ -48,7 +48,7 @@ public class PaymentService implements PaymentUseCase {
 
         TossConfirmResult confirmResult = tossPaymentPort.confirm(
                 command.paymentKey(),
-                payment.getChargeId(),
+                payment.getPaymentId(),
                 command.amount()
         );
 
