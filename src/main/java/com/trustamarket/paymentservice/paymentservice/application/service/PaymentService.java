@@ -45,6 +45,7 @@ public class PaymentService implements PaymentUseCase {
     @Transactional
     public SucceededPaymentResult succeededPayment(SucceededPaymentCommand command) {
         Payment payment = paymentRepository.findById(command.paymentId());
+        payment.validateConfirm(command.paymentKey(), command.amount());
 
         TossConfirmResult confirmResult = tossPaymentPort.confirm(
                 command.paymentKey(),
