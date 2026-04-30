@@ -71,6 +71,9 @@ public class Payment extends BaseTimeEntity {
 		if (this.paymentStatus != PaymentStatus.REQUESTED) {
 			throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_STATUS);
 		}
+		if(!paymentKey.equals(this.paymentKey)){
+			throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_KEY);
+		}
 		if (this.amount != confirmAmount) {
 			throw new PaymentException(PaymentErrorCode.PAYMENT_AMOUNT_MISMATCH);
 		}
