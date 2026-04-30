@@ -54,7 +54,7 @@
 
         if (!response.ok) {
           console.log(json);
-          window.location.href = `/demo/payments/${paymentId}/fail?message=${json.message}&code=${json.code}`;
+          window.location.href = `/demo/payments/${paymentId}/failure?message=${json.message}&code=${json.code}`;
         }
 
         return json;
