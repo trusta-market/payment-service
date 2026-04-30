@@ -6,7 +6,9 @@ import com.trustamarket.paymentservice.paymentservice.application.dto.command.Su
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.CreatePaymentResult;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.FailPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.SucceededPaymentResult;
+import com.trustamarket.paymentservice.paymentservice.application.dto.result.TossConfirmResult;
 import com.trustamarket.paymentservice.paymentservice.application.port.PaymentUseCase;
+import com.trustamarket.paymentservice.paymentservice.application.port.TossPaymentPort;
 import com.trustamarket.paymentservice.paymentservice.domain.entity.Payment;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentErrorCode;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentException;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PaymentService implements PaymentUseCase {
 
     private final PaymentRepository paymentRepository;
+    private final TossPaymentPort tossPaymentPort;
 
     @Override
     @Transactional
@@ -42,6 +45,12 @@ public class PaymentService implements PaymentUseCase {
     @Transactional
     public SucceededPaymentResult succeededPayment(SucceededPaymentCommand command) {
         Payment payment = paymentRepository.findById(command.paymentId());
+
+        TossConfirmResult confirmResult = tossPaymentPort.confirm(
+                command.paymentKey(),
+                payment.getChargeId(),
+                command.amount()
+        );
 
         payment.successPayment(command.paymentKey(), command.amount());
 

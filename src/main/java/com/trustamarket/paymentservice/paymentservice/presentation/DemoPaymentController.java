@@ -25,11 +25,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/demo/payment")
+@RequestMapping("/demo/payments")
 @RequiredArgsConstructor
 public class DemoPaymentController {
 
     private final PaymentUseCase paymentUseCase;
+
+    @GetMapping("/checkout")
+    public String checkout(@RequestParam long amount,
+                           @RequestParam UUID paymentId,
+                           Model model) {
+        model.addAttribute("amount", amount);
+        model.addAttribute("paymentId", paymentId);
+        return "checkout";
+    }
 
     @PostMapping
     @ResponseBody
@@ -40,24 +49,14 @@ public class DemoPaymentController {
     }
 
     @GetMapping("/{paymentId}/success")
-    @ResponseBody
-    public SucceededPaymentResult paymentSuccess(
-            @PathVariable UUID paymentId,
-            @RequestParam @NotBlank String paymentKey,
-            @RequestParam @Positive long amount
-    ) {
-        SucceededPaymentCommand command = new SucceededPaymentCommand(paymentId, paymentKey, amount);
-        return paymentUseCase.succeededPayment(command);
+    public String successPage(@PathVariable UUID paymentId, Model model) {
+        model.addAttribute("paymentId", paymentId);
+        return "success";
     }
 
     @GetMapping("/{paymentId}/fail")
-    @ResponseBody
-    public FailPaymentResult paymentFail(
-            @PathVariable UUID paymentId,
-            @RequestParam @NotBlank String code,
-            @RequestParam @NotBlank String message
-    ) {
-        FailPaymentCommand command = new FailPaymentCommand(paymentId, code, message);
-        return paymentUseCase.failPayment(command);
+    public String failPage(@PathVariable UUID paymentId, Model model) {
+        model.addAttribute("paymentId", paymentId);
+        return "fail";
     }
 }
