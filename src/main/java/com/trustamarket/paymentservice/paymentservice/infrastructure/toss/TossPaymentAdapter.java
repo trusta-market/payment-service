@@ -19,12 +19,12 @@ public class TossPaymentAdapter implements TossPaymentPort {
     private final TossPaymentFeignClient tossPaymentFeignClient;
 
     @Override
-    public TossConfirmResult confirm(String paymentKey, UUID chargeId, long amount) {
-        String paymentId = chargeId.toString();
+    public TossConfirmResult confirm(String paymentKey, UUID paymentId, long amount) {
+        String orderId = paymentId.toString();
 
         try{
             TossConfirmResponse response = tossPaymentFeignClient.confirm(
-                    new TossConfirmRequest(paymentKey, paymentId, amount)
+                    new TossConfirmRequest(paymentKey, orderId, amount)
             );
 
             return new TossConfirmResult(
