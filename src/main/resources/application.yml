@@ -3,3 +3,8 @@ spring:
     name: payment-service
   profiles:
     active: local
+
+toss:
+  payment:
+    base-url: https://api.tosspayments.com
+    secret-key: ${TOSS_SECRET_KEY}
