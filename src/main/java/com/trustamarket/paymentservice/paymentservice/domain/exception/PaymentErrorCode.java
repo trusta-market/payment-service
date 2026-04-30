@@ -8,7 +8,7 @@ public enum PaymentErrorCode implements ErrorCodeSpec {
     PAYMENT_NOT_FOUND("PAYMENT_NOT_FOUND", "결제를 찾을 수 없습니다.", HttpStatus.NOT_FOUND, "payment"),
     DUPLICATE_CHARGE_ID("DUPLICATE_CHARGE_ID","이미 결제가 존재하는 충전 요청입니다.", HttpStatus.CONFLICT, null),
     INVALID_PAYMENT_STATUS("INVALID_PAYMENT_STATUS","결제 상태 전이 오류입니다.", HttpStatus.CONFLICT, null),
-    INVALID_PAYMENT_KEY("INVALID_PAYMENT_KEY", "결제 키가 일치하지 않습니다.", HttpStatus.BAD_REQUEST, null),
+    INVALID_PAYMENT_KEY("INVALID_PAYMENT_KEY", "결제키가 유효하지 않습니다.", HttpStatus.BAD_REQUEST, null),
     PAYMENT_AMOUNT_MISMATCH("PAYMENT_AMOUNT_MISMATCH","PG 승인 금액이 일치하지 않습니다.", HttpStatus.BAD_REQUEST, null),
     PAYMENT_CONFIRM_UNKNOWN("PAYMENT_CONFIRM_UNKNOWN","결제 승인 결과를 확인할 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR, null);
 
