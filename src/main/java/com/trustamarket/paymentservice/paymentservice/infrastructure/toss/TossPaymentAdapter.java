@@ -28,8 +28,8 @@ public class TossPaymentAdapter implements TossPaymentPort {
             );
 
             return new TossConfirmResult(
-                    response.paymentKey(),
                     response.paymentId(),
+                    response.paymentKey(),
                     response.status(),
                     response.method(),
                     response.totalAmount()
