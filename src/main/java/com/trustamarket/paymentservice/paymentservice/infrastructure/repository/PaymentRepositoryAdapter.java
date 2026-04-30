@@ -1,4 +1,4 @@
-package com.trustamarket.paymentservice.paymentservice.infrastructure;
+package com.trustamarket.paymentservice.paymentservice.infrastructure.repository;
 
 import com.trustamarket.paymentservice.paymentservice.domain.entity.Payment;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentErrorCode;
