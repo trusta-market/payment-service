@@ -54,7 +54,7 @@ public class DemoPaymentController {
         return "success";
     }
 
-    @GetMapping("/{paymentId}/fail")
+    @GetMapping("/{paymentId}/failure")
     public String failPage(@PathVariable UUID paymentId, Model model) {
         model.addAttribute("paymentId", paymentId);
         return "fail";
