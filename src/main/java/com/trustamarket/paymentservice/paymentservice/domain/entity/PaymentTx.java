@@ -1,5 +1,6 @@
 package com.trustamarket.paymentservice.paymentservice.domain.entity;
 
+import com.trustamarket.common.domain.BaseCreatedEntity;
 import com.trustamarket.paymentservice.paymentservice.domain.enums.PaymentTxType;
 import com.trustamarket.paymentservice.paymentservice.domain.vo.Amount;
 import jakarta.persistence.Column;
@@ -15,14 +16,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Getter
 @Entity
 @Table(name = "p_payment_transactions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PaymentTx {
+public class PaymentTx extends BaseCreatedEntity {
 
 	@Id
 	@Column(name = "payment_tx_id", nullable = false, updatable = false)
@@ -48,9 +48,6 @@ public class PaymentTx {
 	@Column(name = "pg_response_message", length = 255)
 	private String pgResponseMessage;
 
-	@Column(name = "created_at", nullable = false, updatable = false)
-	private Instant createdAt;
-
 	public static PaymentTx createRequest(
 			Amount amount
 	) {
@@ -59,7 +56,6 @@ public class PaymentTx {
 		tx.paymentTxId = UUID.randomUUID();
 		tx.txType = PaymentTxType.REQUESTED;
 		tx.amount = amount.value();
-		tx.createdAt = Instant.now();
         return tx;
     }
 
@@ -74,7 +70,6 @@ public class PaymentTx {
 		tx.txType = PaymentTxType.SUCCESS;
 		tx.amount = amount.value();
 		tx.paymentKey = paymentKey;
-		tx.createdAt = Instant.now();
 		return tx;
 	}
 
@@ -90,7 +85,6 @@ public class PaymentTx {
 		tx.amount = amount.value();
 		tx.pgResponseCode = pgResponseCode;
 		tx.pgResponseMessage = pgResponseMessage;
-		tx.createdAt = Instant.now();
 		return tx;
 	}
 
