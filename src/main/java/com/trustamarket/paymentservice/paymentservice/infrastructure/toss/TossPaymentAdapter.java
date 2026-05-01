@@ -2,7 +2,6 @@ package com.trustamarket.paymentservice.paymentservice.infrastructure.toss;
 
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.TossConfirmResult;
 import com.trustamarket.paymentservice.paymentservice.application.port.TossPaymentPort;
-import com.trustamarket.paymentservice.paymentservice.domain.entity.Payment;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentErrorCode;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentException;
 import com.trustamarket.paymentservice.paymentservice.infrastructure.toss.dto.TossConfirmRequest;
