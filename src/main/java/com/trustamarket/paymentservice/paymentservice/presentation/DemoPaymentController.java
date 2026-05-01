@@ -19,11 +19,7 @@ public class DemoPaymentController {
     private final PaymentUseCase paymentUseCase;
 
     @GetMapping("/checkout")
-    public String checkout(@RequestParam long amount,
-                           @RequestParam UUID paymentId,
-                           Model model) {
-        model.addAttribute("amount", amount);
-        model.addAttribute("paymentId", paymentId);
+    public String checkout(){
         return "checkout";
     }
 
