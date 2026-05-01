@@ -9,9 +9,9 @@
 <body>
   <div style="margin-top: 30px">
     <div>
-      <label for="orderId">orderId</label>
+      <label for="chargeId">chargeId</label>
       <input
-              id="orderId"
+              id="chargeId"
               type="text"
               readonly
               style="display: block; margin: 8px 0 16px; padding: 8px; width: 300px;"
@@ -40,19 +40,19 @@
 
       window.onload = () => {
         const uuid = crypto.randomUUID();
-        document.getElementById("orderId").value = uuid;
+        document.getElementById("chargeId").value = uuid;
       };
 
       async function requestPayment() {
-        const orderIdInput = document.getElementById("orderId").value.trim();
+        const chargeIdInput = document.getElementById("chargeId").value.trim();
         const amountInput = Number(document.getElementById("amount").value);
 
-        if (!orderIdInput) {
-          alert("orderId를 입력해주세요.");
+        if (!chargeIdInput) {
+          alert("chargeId를 입력해주세요.");
           return;
         }
 
-        if (!amountInput || amountInput <= 0) {
+        if (!Number.isInteger(amountInput) || amountInput <= 0) {
           alert("amount는 1원 이상이어야 합니다.");
           return;
         }
@@ -64,7 +64,7 @@
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            chargeId: orderIdInput,
+            chargeId: chargeIdInput,
             amount: amountInput,
           }),
         });

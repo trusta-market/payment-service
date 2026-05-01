@@ -11,7 +11,7 @@ public record PointWalletRequest (
 ){
     public PointWalletRequest {
         if(paymentId == null) {
-            throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_KEY);
+            throw new IllegalArgumentException("paymentId는 필수값입니다.");
         }
         if(chargedAmount <= 0) {
             //todo : long -> Amount
