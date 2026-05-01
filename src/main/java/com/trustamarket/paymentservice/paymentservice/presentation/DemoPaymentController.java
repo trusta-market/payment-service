@@ -16,8 +16,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DemoPaymentController {
 
-    private final PaymentUseCase paymentUseCase;
-
     @GetMapping("/checkout")
     public String checkout(){
         return "checkout";
