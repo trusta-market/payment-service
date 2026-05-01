@@ -16,11 +16,13 @@ import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentEx
 import com.trustamarket.paymentservice.paymentservice.domain.repository.PaymentRepository;
 import com.trustamarket.paymentservice.paymentservice.domain.vo.Amount;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PaymentService implements PaymentUseCase {
 
@@ -56,10 +58,15 @@ public class PaymentService implements PaymentUseCase {
         );
 
         payment.successPayment(command.paymentKey(), command.amount());
-
-        walletPort.pointToWallet(command.paymentId(), command.amount());
-
         SucceededPaymentResult result = SucceededPaymentResult.from(payment);
+
+        try {
+            walletPort.pointToWallet(command.paymentId(), command.amount());
+        } catch (Exception e){
+            log.error("포인트 적립 실패", e);
+            // todo : 포인트 적립 실패 로직
+        }
+
         return result;
     }
 
