@@ -15,17 +15,17 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DemoPaymentController {
 
-    @Value("${toss.client-key}")
+    @Value("${TOSS_CLIENT_KEY}")
     private String tossClientKey;
 
-    @Value("${toss.customer-key}")
+    @Value("${TOSS_CUSTOMER_KEY}")
     private String tossCustomerKey;
 
 
     @GetMapping("/checkout")
     public String checkout(Model model){
-        model.addAttribute("toss_Client_Key", tossClientKey);
-        model.addAttribute("toss_Customer_Key", tossCustomerKey);
+        model.addAttribute("TOSS_CLIENT_KEY", tossClientKey);
+        model.addAttribute("TOSS_CUSTOMER_KEY", tossCustomerKey);
         return "checkout";
     }
 
