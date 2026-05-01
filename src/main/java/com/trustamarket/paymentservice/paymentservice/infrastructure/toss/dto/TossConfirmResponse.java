@@ -2,8 +2,7 @@ package com.trustamarket.paymentservice.paymentservice.infrastructure.toss.dto;
 
 public record TossConfirmResponse(
         String paymentKey,
-        String paymentId,
+        String orderId,
         String status,
-        String method,
         Long totalAmount
 ) {}

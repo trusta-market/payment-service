@@ -2,6 +2,7 @@ package com.trustamarket.paymentservice.paymentservice.infrastructure.toss;
 
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.TossConfirmResult;
 import com.trustamarket.paymentservice.paymentservice.application.port.TossPaymentPort;
+import com.trustamarket.paymentservice.paymentservice.domain.entity.Payment;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentErrorCode;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentException;
 import com.trustamarket.paymentservice.paymentservice.infrastructure.toss.dto.TossConfirmRequest;
@@ -27,13 +28,18 @@ public class TossPaymentAdapter implements TossPaymentPort {
                     new TossConfirmRequest(paymentKey, orderId, amount)
             );
 
+            if(!response.status().equals("DONE")){
+                throw new PaymentException(PaymentErrorCode.PAYMENT_CONFIRM_UNKNOWN);
+            }
+
             return new TossConfirmResult(
-                    response.paymentId(),
                     response.paymentKey(),
-                    response.status(),
-                    response.method(),
+                    response.orderId(),
                     response.totalAmount()
             );
+
+            //todo : 값 불일치시 취소 API 구현필요
+            //todo : RetryableException 추가
         } catch (FeignException e) {
             throw new PaymentException(PaymentErrorCode.PAYMENT_CONFIRM_UNKNOWN);
         }
