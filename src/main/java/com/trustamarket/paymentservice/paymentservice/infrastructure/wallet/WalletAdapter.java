@@ -20,7 +20,8 @@ public class WalletAdapter implements WalletPort {
                 paymentId, chargedAmount
         );
 
-        UUID userId = UUID.randomUUID(); // 임시 userId전달
+        //// 임시 userId전달 추후에 헤더값의 uerId로 변경
+        UUID userId = UUID.randomUUID();
         return walletFeignClient.pointToWallet(userId, request);
     }
 }
