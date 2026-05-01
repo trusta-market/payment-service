@@ -31,7 +31,7 @@
     <button class="button" onclick="requestPayment()">결제하기</button>
   </div>
 
-    <script>
+    <script th:inline="javascript">
       const clientKey = /*[[${toss_Client_Key}]]*/ "";
       const customerKey = /*[[${toss_Customer_Key}]]*/ "";
 

@@ -6,3 +6,5 @@ toss:
   payment:
     base-url: https://api.tosspayments.com
     secret-key: ${TOSS_SECRET_KEY}
+    client-key: ${TOSS_CLIENT_KEY}
+    customer-key: ${TOSS_CUSTOMER_KEY}
