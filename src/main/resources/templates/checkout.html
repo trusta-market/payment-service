@@ -32,8 +32,8 @@
   </div>
 
     <script th:inline="javascript">
-      const clientKey = /*[[${toss_Client_Key}]]*/ "";
-      const customerKey = /*[[${toss_Customer_Key}]]*/ "";
+      const clientKey = /*[[${TOSS_CLIENT_KEY}]]*/ "";
+      const customerKey = /*[[${TOSS_CUSTOMER_KEY}]]*/ "";
 
       const tossPayments = TossPayments(clientKey);
       const payment = tossPayments.payment({ customerKey });
