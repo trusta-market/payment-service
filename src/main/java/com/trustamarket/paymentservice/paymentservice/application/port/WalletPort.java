@@ -1,7 +1,8 @@
 package com.trustamarket.paymentservice.paymentservice.application.port;
 
+import com.trustamarket.common.response.CommonResponse;
 import java.util.UUID;
 
 public interface WalletPort {
-    void pointToWallet(UUID paymentId, long amount);
+    CommonResponse<Void> pointToWallet(UUID paymentId, long amount);
 }

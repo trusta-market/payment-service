@@ -1,5 +1,6 @@
 package com.trustamarket.paymentservice.paymentservice.infrastructure.wallet;
 
+import com.trustamarket.common.response.CommonResponse;
 import com.trustamarket.paymentservice.paymentservice.infrastructure.wallet.dto.PointWalletRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +13,7 @@ import java.util.UUID;
 public interface WalletFeignClient {
 
     @PostMapping("/internal/wallets/{userId}/charge")
-    void pointToWallet(
+    CommonResponse<Void> pointToWallet(
             @PathVariable UUID userId,
             @RequestBody PointWalletRequest request
     );
