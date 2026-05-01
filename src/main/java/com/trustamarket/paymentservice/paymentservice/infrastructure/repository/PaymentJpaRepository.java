@@ -1,4 +1,4 @@
-package com.trustamarket.paymentservice.paymentservice.infrastructure;
+package com.trustamarket.paymentservice.paymentservice.infrastructure.repository;
 
 import com.trustamarket.paymentservice.paymentservice.domain.entity.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;

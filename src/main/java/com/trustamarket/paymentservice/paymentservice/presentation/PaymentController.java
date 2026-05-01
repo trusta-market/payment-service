@@ -18,6 +18,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,7 +48,7 @@ public class PaymentController {
                 .body(new CommonResponse<>(HttpStatus.CREATED.value(), response));
     }
 
-    @PostMapping("/{paymentId}/success")
+    @GetMapping("/{paymentId}/success")
     public CommonResponse<SucceededPaymentResponse> successPayment(
             @PathVariable UUID paymentId,
             @RequestParam @NotBlank String paymentKey,
@@ -62,7 +63,7 @@ public class PaymentController {
         return new CommonResponse<>(HttpStatus.OK.value(), response);
     }
 
-    @PostMapping("/{paymentId}/failure")
+    @GetMapping("/{paymentId}/failure")
     public CommonResponse<FailPaymentResponse> failPayment(
             @PathVariable UUID paymentId,
             @RequestParam @NotBlank String code,

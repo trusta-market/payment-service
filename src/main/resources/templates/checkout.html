@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" type="text/css" href="/css/style.css" />
+  <script src="https://js.tosspayments.com/v2/standard"></script>
+</head>
+<body>
+<button class="button" style="margin-top: 30px" onclick="requestPayment()">결제하기</button>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const amount = Number(urlParams.get("amount"));
+  const paymentId = urlParams.get("paymentId");
+
+  const clientKey = "test_ck_EP59LybZ8BDo7yajD4LYV6GYo7pR";
+  const customerKey = "aFNXGirOcx1ZjKalfy5K_";
+  const tossPayments = TossPayments(clientKey);
+  const payment = tossPayments.payment({ customerKey });
+
+  async function requestPayment() {
+    await payment.requestPayment({
+      method: "CARD",
+      amount: {
+        currency: "KRW",
+        value: amount,
+      },
+      orderId: paymentId,
+      orderName: "포인트 충전",
+      successUrl: window.location.origin + "/demo/payments/" + paymentId + "/success",
+      failUrl: window.location.origin + "/demo/payments/" + paymentId + "/failure",
+      customerEmail: "customer123@gmail.com",
+      customerName: "김토스",
+      customerMobilePhone: "01012341234",
+      card: {
+        useEscrow: false,
+        flowMode: "DEFAULT",
+        useCardPoint: false,
+        useAppCardOnly: false,
+      },
+    });
+  }
+</script>
+</body>
+</html>

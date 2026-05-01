@@ -1,4 +1,4 @@
-package com.trustamarket.paymentservice.paymentservice.infrastructure;
+package com.trustamarket.paymentservice.paymentservice.infrastructure.repository;
 
 import com.trustamarket.paymentservice.paymentservice.domain.entity.Payment;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentErrorCode;
@@ -28,7 +28,8 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
 
     @Override
     public Payment findById(UUID paymentId){
-        Payment payment = paymentJpaRepository.findById(paymentId).orElseThrow(() -> new PaymentException(PaymentErrorCode.PAYMENT_NOT_FOUND));
+        Payment payment = paymentJpaRepository.findById(paymentId).
+                orElseThrow(() -> new PaymentException(PaymentErrorCode.PAYMENT_NOT_FOUND));
         return payment;
     }
 }

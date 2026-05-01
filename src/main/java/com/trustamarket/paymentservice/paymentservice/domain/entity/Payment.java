@@ -67,6 +67,17 @@ public class Payment extends BaseTimeEntity {
 		return payment;
 	}
 
+	public void validateConfirm(String paymentKey, long confirmAmount){
+		if (this.paymentStatus != PaymentStatus.REQUESTED) {
+			throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_STATUS);
+		}
+		if(paymentKey == null || paymentKey.isBlank()){
+			throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_KEY);
+		}
+		if (this.amount != confirmAmount) {
+			throw new PaymentException(PaymentErrorCode.PAYMENT_AMOUNT_MISMATCH);
+		}
+	}
 
 	public void successPayment(String paymentKey, long approvedAmount) {
 		if(this.paymentStatus != PaymentStatus.REQUESTED){
