@@ -9,6 +9,7 @@ import com.trustamarket.paymentservice.paymentservice.application.dto.result.Suc
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.TossConfirmResult;
 import com.trustamarket.paymentservice.paymentservice.application.port.PaymentUseCase;
 import com.trustamarket.paymentservice.paymentservice.application.port.TossPaymentPort;
+import com.trustamarket.paymentservice.paymentservice.application.port.WalletPort;
 import com.trustamarket.paymentservice.paymentservice.domain.entity.Payment;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentErrorCode;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentException;
@@ -25,6 +26,7 @@ public class PaymentService implements PaymentUseCase {
 
     private final PaymentRepository paymentRepository;
     private final TossPaymentPort tossPaymentPort;
+    private final WalletPort walletPort;
 
     @Override
     @Transactional
@@ -54,6 +56,8 @@ public class PaymentService implements PaymentUseCase {
         );
 
         payment.successPayment(command.paymentKey(), command.amount());
+
+        walletPort.pointToWallet(command.paymentId(), command.amount());
 
         SucceededPaymentResult result = SucceededPaymentResult.from(payment);
         return result;
