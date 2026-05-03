@@ -9,22 +9,26 @@ import com.trustamarket.paymentservice.paymentservice.application.dto.result.Suc
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.TossConfirmResult;
 import com.trustamarket.paymentservice.paymentservice.application.port.PaymentUseCase;
 import com.trustamarket.paymentservice.paymentservice.application.port.TossPaymentPort;
+import com.trustamarket.paymentservice.paymentservice.application.port.WalletPort;
 import com.trustamarket.paymentservice.paymentservice.domain.entity.Payment;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentErrorCode;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentException;
 import com.trustamarket.paymentservice.paymentservice.domain.repository.PaymentRepository;
 import com.trustamarket.paymentservice.paymentservice.domain.vo.Amount;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PaymentService implements PaymentUseCase {
 
     private final PaymentRepository paymentRepository;
     private final TossPaymentPort tossPaymentPort;
+    private final WalletPort walletPort;
 
     @Override
     @Transactional
@@ -54,8 +58,15 @@ public class PaymentService implements PaymentUseCase {
         );
 
         payment.successPayment(command.paymentKey(), command.amount());
-
         SucceededPaymentResult result = SucceededPaymentResult.from(payment);
+
+        try {
+            walletPort.pointToWallet(command.paymentId(), command.amount());
+        } catch (Exception e){
+            log.error("포인트 적립 실패", e);
+            // todo : 포인트 적립 실패 로직
+        }
+
         return result;
     }
 

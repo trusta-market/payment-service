@@ -10,7 +10,8 @@ public enum PaymentErrorCode implements ErrorCodeSpec {
     INVALID_PAYMENT_STATUS("INVALID_PAYMENT_STATUS","결제 상태 전이 오류입니다.", HttpStatus.CONFLICT, null),
     INVALID_PAYMENT_KEY("INVALID_PAYMENT_KEY", "결제키가 유효하지 않습니다.", HttpStatus.BAD_REQUEST, null),
     PAYMENT_AMOUNT_MISMATCH("PAYMENT_AMOUNT_MISMATCH","PG 승인 금액이 일치하지 않습니다.", HttpStatus.BAD_REQUEST, null),
-    PAYMENT_CONFIRM_UNKNOWN("PAYMENT_CONFIRM_UNKNOWN","결제 승인 결과를 확인할 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR, null);
+    PAYMENT_CONFIRM_UNKNOWN("PAYMENT_CONFIRM_UNKNOWN","결제 승인 결과를 확인할 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR, null),
+    FAILED_POINT_TO_WALLET("FAILED_POINT_TO_WALLET","충전 포인트 반영에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, null);
 
     private final String code;
     private final String field;

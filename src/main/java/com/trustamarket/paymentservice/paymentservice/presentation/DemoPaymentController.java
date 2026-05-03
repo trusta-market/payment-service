@@ -1,29 +1,31 @@
 package com.trustamarket.paymentservice.paymentservice.presentation;
 
-import com.trustamarket.paymentservice.paymentservice.application.port.PaymentUseCase;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/demo/payments")
+@RequestMapping("/demo/v1/payments")
 @RequiredArgsConstructor
 public class DemoPaymentController {
 
-    private final PaymentUseCase paymentUseCase;
+    @Value("${toss.payment.client-key}")
+    private String tossClientKey;
+
+    @Value("${toss.payment.customer-key}")
+    private String tossCustomerKey;
+
 
     @GetMapping("/checkout")
-    public String checkout(@RequestParam long amount,
-                           @RequestParam UUID paymentId,
-                           Model model) {
-        model.addAttribute("amount", amount);
-        model.addAttribute("paymentId", paymentId);
+    public String checkout(Model model){
+        model.addAttribute("TOSS_CLIENT_KEY", tossClientKey);
+        model.addAttribute("TOSS_CUSTOMER_KEY", tossCustomerKey);
         return "checkout";
     }
 

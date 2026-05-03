@@ -5,41 +5,116 @@
   <link rel="stylesheet" type="text/css" href="/css/style.css" />
   <script src="https://js.tosspayments.com/v2/standard"></script>
 </head>
+
 <body>
-<button class="button" style="margin-top: 30px" onclick="requestPayment()">결제하기</button>
+  <div style="margin-top: 30px">
+    <div>
+      <label for="chargeId">chargeId</label>
+      <input
+              id="chargeId"
+              type="text"
+              readonly
+              style="display: block; margin: 8px 0 16px; padding: 8px; width: 300px;"
+      />
+    </div>
 
-<script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const amount = Number(urlParams.get("amount"));
-  const paymentId = urlParams.get("paymentId");
+    <div>
+      <label for="amount">amount</label>
+      <input
+              id="amount"
+              type="number"
+              placeholder="금액을 입력하세요"
+              style="display: block; margin: 8px 0 16px; padding: 8px; width: 300px;"
+      />
+    </div>
 
-  const clientKey = "test_ck_EP59LybZ8BDo7yajD4LYV6GYo7pR";
-  const customerKey = "aFNXGirOcx1ZjKalfy5K_";
-  const tossPayments = TossPayments(clientKey);
-  const payment = tossPayments.payment({ customerKey });
+    <button class="button" onclick="requestPayment()">결제하기</button>
+  </div>
 
-  async function requestPayment() {
-    await payment.requestPayment({
-      method: "CARD",
-      amount: {
-        currency: "KRW",
-        value: amount,
-      },
-      orderId: paymentId,
-      orderName: "포인트 충전",
-      successUrl: window.location.origin + "/demo/payments/" + paymentId + "/success",
-      failUrl: window.location.origin + "/demo/payments/" + paymentId + "/failure",
-      customerEmail: "customer123@gmail.com",
-      customerName: "김토스",
-      customerMobilePhone: "01012341234",
-      card: {
-        useEscrow: false,
-        flowMode: "DEFAULT",
-        useCardPoint: false,
-        useAppCardOnly: false,
-      },
-    });
-  }
-</script>
-</body>
+    <script th:inline="javascript">
+      const clientKey = /*[[${TOSS_CLIENT_KEY}]]*/ "";
+      const customerKey = /*[[${TOSS_CUSTOMER_KEY}]]*/ "";
+
+      const tossPayments = TossPayments(clientKey);
+      const payment = tossPayments.payment({ customerKey });
+
+      window.onload = () => {
+        const uuid = crypto.randomUUID();
+        document.getElementById("chargeId").value = uuid;
+      };
+
+      async function requestPayment() {
+        const chargeIdInput = document.getElementById("chargeId").value.trim();
+        const amountInput = Number(document.getElementById("amount").value);
+
+        if (!chargeIdInput) {
+          alert("chargeId를 입력해주세요.");
+          return;
+        }
+
+        if (!Number.isInteger(amountInput) || amountInput <= 0) {
+          alert("amount는 1원 이상이어야 합니다.");
+          return;
+        }
+
+        // 1. 서버에 결제 생성 요청
+        const response = await fetch("/api/payments", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chargeId: chargeIdInput,
+            amount: amountInput,
+          }),
+        });
+
+        if (!response.ok) {
+          alert("결제 생성 실패");
+          return;
+        }
+
+        const result = await response.json();
+        const createdPayment = result.data;
+
+        // 서버에서 생성된 paymentId 사용
+        const paymentId = createdPayment.paymentId;
+        const paymentAmount = createdPayment.amount;
+
+        // 2. Toss 결제창 호출
+        await payment.requestPayment({
+          method: "CARD",
+          amount: {
+            currency: "KRW",
+            value: paymentAmount,
+          },
+          orderId: paymentId,
+          orderName: "포인트 충전",
+
+          successUrl:
+                  window.location.origin +
+                  "/demo/payments/" +
+                  paymentId +
+                  "/success",
+
+          failUrl:
+                  window.location.origin +
+                  "/demo/payments/" +
+                  paymentId +
+                  "/failure",
+
+          customerEmail: "customer123@gmail.com",
+          customerName: "김토스",
+          customerMobilePhone: "01012341234",
+
+          card: {
+            useEscrow: false,
+            flowMode: "DEFAULT",
+            useCardPoint: false,
+            useAppCardOnly: false,
+          },
+        });
+      }
+    </script>
+  </body>
 </html>
