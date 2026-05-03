@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.UUID;
 
 @Controller
-@RequestMapping("/demo/payments")
+@RequestMapping("/demo/v1/payments")
 @RequiredArgsConstructor
 public class DemoPaymentController {
 
-    @Value("${TOSS_CLIENT_KEY}")
+    @Value("${toss.payment.client-key}")
     private String tossClientKey;
 
-    @Value("${TOSS_CUSTOMER_KEY}")
+    @Value("${toss.payment.customer-key}")
     private String tossCustomerKey;
 
 
