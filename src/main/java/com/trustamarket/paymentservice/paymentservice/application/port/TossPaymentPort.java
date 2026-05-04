@@ -5,6 +5,5 @@ import com.trustamarket.paymentservice.paymentservice.application.dto.result.Tos
 import java.util.UUID;
 
 public interface TossPaymentPort {
-
     TossConfirmResult confirm(String paymentKey, UUID paymentId, long amount);
 }

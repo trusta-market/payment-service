@@ -15,13 +15,11 @@ public class WalletAdapter implements WalletPort {
     private final WalletFeignClient walletFeignClient;
 
     @Override
-    public CommonResponse<Void> pointToWallet(UUID paymentId, long chargedAmount){
+    public CommonResponse<Void> pointToWallet(UUID userId, UUID paymentId, long chargedAmount){
         PointWalletRequest request = new PointWalletRequest(
-                paymentId, chargedAmount
+                userId, paymentId, chargedAmount
         );
 
-        //// 임시 userId전달 추후에 헤더값의 uerId로 변경
-        UUID userId = UUID.randomUUID();
-        return walletFeignClient.pointToWallet(userId, request);
+        return walletFeignClient.pointToWallet(request);
     }
 }
