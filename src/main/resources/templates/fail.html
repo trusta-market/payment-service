@@ -50,9 +50,11 @@
 
   async function fail() {
     const pathParts = window.location.pathname.split("/");
-    const paymentId = pathParts[3];
+    const paymentId = pathParts[4];
+    const code = encodeURIComponent(urlParams.get("code") || "");
+    const message = encodeURIComponent(urlParams.get("message") || "");
     const response = await fetch(
-            `/api/v1/payments/${paymentId}/failure?code=${urlParams.get("code")}&message=${urlParams.get("message")}`,
+            `/api/v1/payments/${encodeURIComponent(paymentId)}/failure?code=${code}&message=${message}`,
             { method: "GET" }
     );
     return response.json();
