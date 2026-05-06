@@ -59,13 +59,15 @@
   async function confirm() {
     const pathParts = window.location.pathname.split("/");
     const paymentId = pathParts[4];
+    const paymentKey = encodeURIComponent(urlParams.get("paymentKey") || "");
+    const amount = encodeURIComponent(urlParams.get("amount") || "");
     const response = await fetch(
-            `/api/v1/payments/${paymentId}/success?paymentKey=${urlParams.get("paymentKey")}&amount=${urlParams.get("amount")}`,
+            `/api/v1/payments/${encodeURIComponent(paymentId)}/success?paymentKey=${paymentKey}&amount=${amount}`,
             { method: "GET" }
     );
     const json = await response.json();
     if (!response.ok) {
-      window.location.href = `/demo/v1/payments/${paymentId}/failure?message=${json.message}&code=${json.code}`;
+      window.location.href = `/demo/v1/payments/${encodeURIComponent(paymentId)}/failure?message=${encodeURIComponent(json.message || "")}&code=${encodeURIComponent(json.code || "")}`;
     }
     return json;
   }
