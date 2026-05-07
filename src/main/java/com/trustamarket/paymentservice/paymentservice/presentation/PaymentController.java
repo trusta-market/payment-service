@@ -82,7 +82,7 @@ public class PaymentController {
         return new CommonResponse<>(HttpStatus.OK.value(), response);
     }
 
-//    @PreAuthorize("hasRole('MEMBER')")
+    @PreAuthorize("hasRole('MEMBER')")
     @GetMapping()
     public SlicedResponse<SearchPaymentResponse> searchPayments(
             @ModelAttribute SearchPaymentRequest request,
