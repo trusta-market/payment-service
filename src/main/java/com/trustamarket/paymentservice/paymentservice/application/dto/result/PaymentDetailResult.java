@@ -11,6 +11,7 @@ public record PaymentDetailResult(
         long amount,
         PaymentStatus status,
         String paymentKey,
-        Instant createdAt
+        Instant createdAt,
+        Instant updatedAt
 ) {
 }

@@ -1,13 +1,12 @@
-package com.trustamarket.paymentservice.paymentservice.application.dto.command;
+package com.trustamarket.paymentservice.paymentservice.presentation.dto.request;
 
 import com.trustamarket.paymentservice.paymentservice.domain.enums.PaymentStatus;
 
 import java.time.Instant;
 import java.util.UUID;
 
-public record SearchPaymentCommand (
+public record SearchPaymentRequest (
         UUID paymentId,
-        UUID userId,
         long minAmount,
         long maxAmount,
         PaymentStatus status,

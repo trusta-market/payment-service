@@ -7,6 +7,7 @@ public record SearchPaymentResult(
         UUID userId,
         UUID paymentId,
         long amount,
-        Instant createdAt
+        Instant createdAt,
+        Instant updatedAt
 ) {
 }
