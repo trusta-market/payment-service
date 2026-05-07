@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>결제 실패</title>
+  <link rel="icon" href="https://static.toss.im/icons/png/4x/icon-toss-logo.png" />
+  <link rel="stylesheet" type="text/css" href="/css/style.css" />
+</head>
+<body>
+<div class="page-wrapper">
+  <div class="card">
+    <div class="card-icon">
+      <img src="https://static.toss.im/lotties/error-spot-no-loop-space-apng.png" alt="결제 실패" />
+    </div>
+
+    <div class="status-badge error">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      결제 실패
+    </div>
+
+    <h1 class="card-title">결제를 실패했어요</h1>
+    <p class="card-subtitle">아래 내용을 확인하고 다시 시도해 주세요</p>
+
+    <div class="info-list">
+      <div class="info-row">
+        <span class="info-label">에러 메시지</span>
+        <span class="info-value" id="message" style="color: #c0392b;">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">에러 코드</span>
+        <span class="info-value mono" id="code">—</span>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <a class="btn-secondary" href="https://docs.tosspayments.com/guides/v2/payment-widget/integration">연동 문서</a>
+      <a class="btn-ghost" href="https://discord.gg/A4fRFXQhRu">실시간 문의</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+
+  document.getElementById("code").textContent = urlParams.get("code") || "—";
+  document.getElementById("message").textContent = urlParams.get("message") || "—";
+
+  async function fail() {
+    const pathParts = window.location.pathname.split("/");
+    const paymentId = pathParts[4];
+    const code = encodeURIComponent(urlParams.get("code") || "");
+    const message = encodeURIComponent(urlParams.get("message") || "");
+    const response = await fetch(
+            `/api/v1/payments/${encodeURIComponent(paymentId)}/failure?code=${code}&message=${message}`,
+            { method: "GET" }
+    );
+    return response.json();
+  }
+
+  fail();
+</script>
+</body>
+</html>

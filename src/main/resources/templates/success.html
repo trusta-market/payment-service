@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>결제 완료</title>
+  <link rel="icon" href="https://static.toss.im/icons/png/4x/icon-toss-logo.png" />
+  <link rel="stylesheet" type="text/css" href="/css/style.css" />
+</head>
+<body>
+<div class="page-wrapper" style="flex-direction: column; gap: 16px;">
+  <div class="card">
+    <div class="card-icon">
+      <img src="https://static.toss.im/illusts/check-blue-spot-ending-frame.png" alt="결제 완료" />
+    </div>
+
+    <div class="status-badge success">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      결제 완료
+    </div>
+
+    <h1 class="card-title">결제를 완료했어요</h1>
+    <p class="card-subtitle">포인트가 정상적으로 충전되었습니다</p>
+
+    <div class="info-list">
+      <div class="info-row">
+        <span class="info-label">결제금액</span>
+        <span class="info-value" id="amount" style="color: var(--blue600);">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">주문번호</span>
+        <span class="info-value mono" id="paymentId">—</span>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <a class="btn-secondary" href="https://docs.tosspayments.com/guides/v2/payment-widget/integration">연동 문서</a>
+      <a class="btn-ghost" href="https://discord.gg/A4fRFXQhRu">실시간 문의</a>
+    </div>
+  </div>
+
+  <div class="card" style="text-align: left; padding: 28px 32px;">
+    <p class="response-label">응답 데이터</p>
+    <div class="response-box">
+      <pre id="response">불러오는 중...</pre>
+    </div>
+  </div>
+</div>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+
+  document.getElementById("paymentId").textContent = urlParams.get("paymentId") || "—";
+  document.getElementById("amount").textContent = Number(urlParams.get("amount")).toLocaleString() + "원";
+  const paymentKeyEl = document.getElementById("paymentKey");
+  if(paymentKeyEl){
+    paymentKeyEl.textContent = urlParams.get("paymentKey" || "-");
+  }
+
+  async function confirm() {
+    const pathParts = window.location.pathname.split("/");
+    const paymentId = pathParts[4];
+    const paymentKey = encodeURIComponent(urlParams.get("paymentKey") || "");
+    const amount = encodeURIComponent(urlParams.get("amount") || "");
+    const response = await fetch(
+            `/api/v1/payments/${encodeURIComponent(paymentId)}/success?paymentKey=${paymentKey}&amount=${amount}`,
+            { method: "GET" }
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      window.location.href = `/demo/v1/payments/${encodeURIComponent(paymentId)}/failure?message=${encodeURIComponent(json.message || "")}&code=${encodeURIComponent(json.code || "")}`;
+    }
+    return json;
+  }
+
+  confirm().then(data => {
+    document.getElementById("response").textContent = JSON.stringify(data, null, 2);
+  }).catch(err => {
+    document.getElementById("response").textContent = "데이터를 불러오지 못했습니다.";
+  });
+</script>
+</body>
+</html>

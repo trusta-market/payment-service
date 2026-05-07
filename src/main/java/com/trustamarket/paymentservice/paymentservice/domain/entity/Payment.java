@@ -1,6 +1,9 @@
 package com.trustamarket.paymentservice.paymentservice.domain.entity;
 
+import com.trustamarket.common.domain.BaseTimeEntity;
 import com.trustamarket.paymentservice.paymentservice.domain.enums.PaymentStatus;
+import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentErrorCode;
+import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentException;
 import com.trustamarket.paymentservice.paymentservice.domain.vo.Amount;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,7 +18,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -24,11 +26,14 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_payments")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Payment {
+public class Payment extends BaseTimeEntity {
 
 	@Id
 	@Column(name = "payment_id", nullable = false, updatable = false)
 	private UUID paymentId;
+
+	@Column(name = "user_id", nullable = false, updatable = false)
+	private UUID userId;
 
 	@Column(name="payment_key", length = 200)
 	private String paymentKey;
@@ -44,55 +49,58 @@ public class Payment {
 	@Column(name = "version", nullable = false)
 	private Integer version;
 
-	@Column(name = "created_at", nullable = false, updatable = false)
-	private Instant createdAt;
-
-	@Column(name = "created_by")
-	private UUID createdBy;
-
-	@Column(name = "updated_at")
-	private Instant updatedAt;
-
 	@OneToMany(mappedBy = "payment", cascade = CascadeType.PERSIST)
 	private List<PaymentTx> transactions = new ArrayList<>();
 
 	public static Payment create(
+			UUID userId,
+			UUID paymentId,
 			Amount amount
 	) {
 		Payment payment = new Payment();
 
-		payment.paymentId = UUID.randomUUID();
+		payment.userId = userId;
+		payment.paymentId = paymentId;
 		payment.paymentStatus = PaymentStatus.REQUESTED;
 		payment.amount = amount.value();
-		payment.createdAt = Instant.now();
 
-		payment.addTransaction(PaymentTx.createRequest(amount));
+		payment.addTransaction(PaymentTx.createRequest(userId, amount));
 		return payment;
+	}
+
+	public void validateConfirm(String paymentKey, long confirmAmount){
+		if (this.paymentStatus != PaymentStatus.REQUESTED) {
+			throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_STATUS);
+		}
+		if(paymentKey == null || paymentKey.isBlank()){
+			throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_KEY);
+		}
+		if (this.amount != confirmAmount) {
+			throw new PaymentException(PaymentErrorCode.PAYMENT_AMOUNT_MISMATCH);
+		}
 	}
 
 	public void successPayment(String paymentKey, long approvedAmount) {
 		if(this.paymentStatus != PaymentStatus.REQUESTED){
-			throw new IllegalStateException("결제 상태 전이 오류");
+			throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_STATUS);
 		}
 		if (approvedAmount != this.amount) {
-			throw new IllegalStateException("PG 승인 금액 불일치");
+			throw new PaymentException(PaymentErrorCode.PAYMENT_AMOUNT_MISMATCH);
 		}
 
 		this.paymentStatus = PaymentStatus.SUCCESS;
 		this.paymentKey = paymentKey;
-		this.updatedAt = Instant.now();
 
-		this.addTransaction(PaymentTx.createSuccess(Amount.of(approvedAmount), paymentKey));
+		this.addTransaction(PaymentTx.createSuccess(userId, Amount.of(approvedAmount), paymentKey));
 	}
 
 	public void failPayment(String pgCode,  String pgMessage) {
 		if(this.paymentStatus != PaymentStatus.REQUESTED){
-			throw new IllegalStateException("결제 상태 전이 오류");
+			throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_STATUS);
 		}
 		this.paymentStatus = PaymentStatus.FAILED;
-		this.updatedAt = Instant.now();
 
-		this.addTransaction(PaymentTx.createFail(Amount.of(amount), pgCode, pgMessage));
+		this.addTransaction(PaymentTx.createFail(userId, Amount.of(amount), pgCode, pgMessage));
 	}
 
 	private void addTransaction(PaymentTx transaction) {
