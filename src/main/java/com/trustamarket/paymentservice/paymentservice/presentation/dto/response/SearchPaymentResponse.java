@@ -1,6 +1,5 @@
 package com.trustamarket.paymentservice.paymentservice.presentation.dto.response;
 
-import com.trustamarket.paymentservice.paymentservice.application.dto.command.SearchPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.SearchPaymentResult;
 
 import java.time.Instant;

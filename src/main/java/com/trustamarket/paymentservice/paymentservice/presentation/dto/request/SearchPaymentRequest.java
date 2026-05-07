@@ -7,8 +7,13 @@ import java.util.UUID;
 
 public record SearchPaymentRequest (
         UUID paymentId,
-        long minAmount,
-        long maxAmount,
+        Long minAmount,
+        Long maxAmount,
         PaymentStatus status,
         Instant paidAt
-) {}
+) {
+    public SearchPaymentRequest {
+        if (minAmount == null){ minAmount = 0L; }
+        if (maxAmount == null){ maxAmount = Long.MAX_VALUE; }
+    }
+}
