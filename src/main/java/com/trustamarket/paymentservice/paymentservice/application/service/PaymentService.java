@@ -2,12 +2,15 @@ package com.trustamarket.paymentservice.paymentservice.application.service;
 
 import com.trustamarket.paymentservice.paymentservice.application.dto.command.CreatePaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.application.dto.command.FailPaymentCommand;
+import com.trustamarket.paymentservice.paymentservice.application.dto.query.PaymentDetailQuery;
+import com.trustamarket.paymentservice.paymentservice.application.dto.query.SearchPaymentQuery;
 import com.trustamarket.paymentservice.paymentservice.application.dto.command.SucceededPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.CreatePaymentResult;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.FailPaymentResult;
+import com.trustamarket.paymentservice.paymentservice.application.dto.result.PaymentDetailResult;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.PaymentInfoResult;
+import com.trustamarket.paymentservice.paymentservice.application.dto.result.SearchPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.SucceededPaymentResult;
-import com.trustamarket.paymentservice.paymentservice.application.dto.result.TossConfirmResult;
 import com.trustamarket.paymentservice.paymentservice.application.port.PaymentUseCase;
 import com.trustamarket.paymentservice.paymentservice.application.port.TossPaymentPort;
 import com.trustamarket.paymentservice.paymentservice.application.port.WalletPort;
@@ -19,6 +22,8 @@ import com.trustamarket.paymentservice.paymentservice.domain.vo.Amount;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,6 +87,26 @@ public class PaymentService implements PaymentUseCase {
 
         FailPaymentResult result = FailPaymentResult.from(payment);
         return result;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PaymentDetailResult getPaymentDetail(PaymentDetailQuery command) {
+        Payment payment = paymentRepository.findById(command.paymentId());
+        if(!payment.getUserId().equals(command.userId())) {
+            throw new PaymentException(PaymentErrorCode.PAYMENT_ACCESS_DENIED);
+        }
+
+        PaymentDetailResult result = PaymentDetailResult.from(payment);
+
+        return result;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<SearchPaymentResult> searchPayments(SearchPaymentQuery query, Pageable pageable) {
+        Slice<Payment> payments = paymentRepository.searchPayments(query, pageable);
+        return payments.map(SearchPaymentResult::from);
     }
 
     @Override
