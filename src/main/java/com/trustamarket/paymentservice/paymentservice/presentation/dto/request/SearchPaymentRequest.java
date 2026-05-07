@@ -13,5 +13,8 @@ public record SearchPaymentRequest (
     public SearchPaymentRequest {
         if (minAmount == null){ minAmount = 0L; }
         if (maxAmount == null){ maxAmount = Long.MAX_VALUE; }
+        if (minAmount > maxAmount){
+            throw new IllegalArgumentException("검색 최소 금액은 최대 금액보다 작아야합니다.");
+        }
     }
 }

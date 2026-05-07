@@ -24,6 +24,6 @@ public class PaymentSpecification {
 
     public static Specification<Payment> amountBetween(long min, long max) {
         return (root, query, cb) ->
-                (min == 0 && max == 0) ? null : cb.between(root.get("amount"), min, max);
+                (min == 0 && max == Long.MAX_VALUE) ? null : cb.between(root.get("amount"), min, max);
     }
 }
