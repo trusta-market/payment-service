@@ -95,8 +95,7 @@ public class PaymentController {
                 userId,
                 request.minAmount(),
                 request.maxAmount(),
-                request.status(),
-                request.paidAt()
+                request.status()
         );
         Slice<SearchPaymentResult> result = paymentUseCase.searchPayments(query, pageable);
         Slice<SearchPaymentResponse> response = result.map(SearchPaymentResponse::from);

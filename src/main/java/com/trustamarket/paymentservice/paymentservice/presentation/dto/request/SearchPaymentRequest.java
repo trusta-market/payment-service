@@ -2,15 +2,13 @@ package com.trustamarket.paymentservice.paymentservice.presentation.dto.request;
 
 import com.trustamarket.paymentservice.paymentservice.domain.enums.PaymentStatus;
 
-import java.time.Instant;
 import java.util.UUID;
 
 public record SearchPaymentRequest (
         UUID paymentId,
         Long minAmount,
         Long maxAmount,
-        PaymentStatus status,
-        Instant paidAt
+        PaymentStatus status
 ) {
     public SearchPaymentRequest {
         if (minAmount == null){ minAmount = 0L; }
