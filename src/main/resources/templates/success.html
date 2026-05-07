@@ -54,7 +54,10 @@
 
   document.getElementById("paymentId").textContent = urlParams.get("paymentId") || "—";
   document.getElementById("amount").textContent = Number(urlParams.get("amount")).toLocaleString() + "원";
-  document.getElementById("paymentKey").textContent = urlParams.get("paymentKey") || "—";
+  const paymentKeyEl = document.getElementById("paymentKey");
+  if(paymentKeyEl){
+    paymentKeyEl.textContent = urlParams.get("paymentKey" || "-");
+  }
 
   async function confirm() {
     const pathParts = window.location.pathname.split("/");
