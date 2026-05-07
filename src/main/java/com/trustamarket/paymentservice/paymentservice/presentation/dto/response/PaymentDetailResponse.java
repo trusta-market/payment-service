@@ -11,7 +11,6 @@ public record PaymentDetailResponse (
         UUID userId,
         long amount,
         PaymentStatus status,
-        String paymentKey,
         Instant createdAt,
         Instant updatedAt
 ) {
@@ -21,7 +20,6 @@ public record PaymentDetailResponse (
                 result.userId(),
                 result.amount(),
                 result.status(),
-                result.paymentKey(),
                 result.createdAt(),
                 result.updatedAt()
         );
