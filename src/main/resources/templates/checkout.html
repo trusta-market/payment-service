@@ -1,120 +1,90 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" type="text/css" href="/css/style.css" />
-  <script src="https://js.tosspayments.com/v2/standard"></script>
-</head>
+  <!DOCTYPE html>
+  <html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>결제하기</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <script src="https://js.tosspayments.com/v2/standard"></script>
+  </head>
+  <body>
+  <div class="page-wrapper">
+    <div class="card">
+      <div class="card-icon">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="64" height="64" rx="20" fill="#e8f3ff"/>
+          <rect x="12" y="22" width="40" height="28" rx="5" fill="#3182f6"/>
+          <rect x="12" y="29" width="40" height="8" fill="#1957c2"/>
+          <rect x="18" y="38" width="12" height="4" rx="2" fill="white" fill-opacity="0.6"/>
+          <rect x="36" y="38" width="8" height="4" rx="2" fill="white" fill-opacity="0.4"/>
+        </svg>
+      </div>
 
-<body>
-  <div style="margin-top: 30px">
-    <div>
-      <label for="chargeId">chargeId</label>
-      <input
-              id="chargeId"
-              type="text"
-              readonly
-              style="display: block; margin: 8px 0 16px; padding: 8px; width: 300px;"
-      />
+      <h1 class="card-title">포인트 충전</h1>
+      <p class="card-subtitle">아래 정보를 확인하고 결제를 진행해 주세요</p>
+
+      <div class="info-list">
+        <div class="info-row">
+          <span class="info-label">주문번호</span>
+          <span class="info-value mono" id="paymentId">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">결제금액</span>
+          <span class="info-value" id="amountDisplay">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">결제수단</span>
+          <span class="info-value">신용카드 / 체크카드</span>
+        </div>
+      </div>
+
+      <button type="button" class="btn-primary" onclick="requestPayment()" id="payBtn">
+        결제하기
+      </button>
+
+      <p style="font-size: 12px; color: var(--grey400); margin: 0;">
+        결제 진행 시 이용약관 및 개인정보처리방침에 동의하는 것으로 간주됩니다
+      </p>
     </div>
-
-    <div>
-      <label for="amount">amount</label>
-      <input
-              id="amount"
-              type="number"
-              placeholder="금액을 입력하세요"
-              style="display: block; margin: 8px 0 16px; padding: 8px; width: 300px;"
-      />
-    </div>
-
-    <button class="button" onclick="requestPayment()">결제하기</button>
   </div>
 
-    <script th:inline="javascript">
-      const clientKey = /*[[${TOSS_CLIENT_KEY}]]*/ "";
-      const customerKey = /*[[${TOSS_CUSTOMER_KEY}]]*/ "";
+  <script th:inline="javascript">
+    const clientKey = /*[[${TOSS_CLIENT_KEY}]]*/ "";
+    const customerKey = /*[[${TOSS_CUSTOMER_KEY}]]*/ "";
+    const paymentId = /*[[${PAYMENT_ID}]]*/ "";
+    const amount = /*[[${PAYMENT_AMOUNT}]]*/ 0;
 
-      const tossPayments = TossPayments(clientKey);
-      const payment = tossPayments.payment({ customerKey });
+    const tossPayments = TossPayments(clientKey);
+    const payment = tossPayments.payment({ customerKey });
 
-      window.onload = () => {
-        const uuid = crypto.randomUUID();
-        document.getElementById("chargeId").value = uuid;
-      };
+    window.onload = () => {
+      document.getElementById("paymentId").textContent = paymentId;
+      document.getElementById("amountDisplay").textContent = amount.toLocaleString() + "원";
+    };
 
-      async function requestPayment() {
-        const chargeIdInput = document.getElementById("chargeId").value.trim();
-        const amountInput = Number(document.getElementById("amount").value);
-
-        if (!chargeIdInput) {
-          alert("chargeId를 입력해주세요.");
-          return;
-        }
-
-        if (!Number.isInteger(amountInput) || amountInput <= 0) {
-          alert("amount는 1원 이상이어야 합니다.");
-          return;
-        }
-
-        // 1. 서버에 결제 생성 요청
-        const response = await fetch("/api/payments", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            chargeId: chargeIdInput,
-            amount: amountInput,
-          }),
-        });
-
-        if (!response.ok) {
-          alert("결제 생성 실패");
-          return;
-        }
-
-        const result = await response.json();
-        const createdPayment = result.data;
-
-        // 서버에서 생성된 paymentId 사용
-        const paymentId = createdPayment.paymentId;
-        const paymentAmount = createdPayment.amount;
-
-        // 2. Toss 결제창 호출
+    async function requestPayment() {
+      const btn = document.getElementById("payBtn");
+      btn.disabled = true;
+      btn.textContent = "처리 중...";
+      try {
         await payment.requestPayment({
           method: "CARD",
-          amount: {
-            currency: "KRW",
-            value: paymentAmount,
-          },
+          amount: { currency: "KRW", value: amount },
           orderId: paymentId,
           orderName: "포인트 충전",
-
-          successUrl:
-                  window.location.origin +
-                  "/demo/payments/" +
-                  paymentId +
-                  "/success",
-
-          failUrl:
-                  window.location.origin +
-                  "/demo/payments/" +
-                  paymentId +
-                  "/failure",
-
+          successUrl: window.location.origin + "/demo/v1/payments/" + paymentId + "/success",
+          failUrl: window.location.origin + "/demo/v1/payments/" + paymentId + "/failure",
           customerEmail: "customer123@gmail.com",
           customerName: "김토스",
           customerMobilePhone: "01012341234",
-
-          card: {
-            useEscrow: false,
-            flowMode: "DEFAULT",
-            useCardPoint: false,
-            useAppCardOnly: false,
-          },
+          card: { useEscrow: false, flowMode: "DEFAULT", useCardPoint: false, useAppCardOnly: false },
         });
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = "결제하기";
+        alert("결제 요청 중 오류가 발생했습니다. 다시 시도해 주세요.");
       }
-    </script>
+    }
+  </script>
   </body>
-</html>
+  </html>

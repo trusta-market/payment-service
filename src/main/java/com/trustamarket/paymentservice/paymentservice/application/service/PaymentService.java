@@ -5,6 +5,7 @@ import com.trustamarket.paymentservice.paymentservice.application.dto.command.Fa
 import com.trustamarket.paymentservice.paymentservice.application.dto.command.SucceededPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.CreatePaymentResult;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.FailPaymentResult;
+import com.trustamarket.paymentservice.paymentservice.application.dto.result.PaymentInfoResult;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.SucceededPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.TossConfirmResult;
 import com.trustamarket.paymentservice.paymentservice.application.port.PaymentUseCase;
@@ -21,6 +22,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -34,7 +37,7 @@ public class PaymentService implements PaymentUseCase {
     @Transactional
     public CreatePaymentResult createPayment(CreatePaymentCommand command) {
         try{
-            Payment payment = Payment.create(command.chargeId(), Amount.of(command.amount()));
+            Payment payment = Payment.create(command.userId(), command.paymentId(), Amount.of(command.amount()));
             Payment savedPayment = paymentRepository.saveAndFlush(payment);
 
             CreatePaymentResult result = CreatePaymentResult.from(savedPayment);
@@ -51,7 +54,7 @@ public class PaymentService implements PaymentUseCase {
         Payment payment = paymentRepository.findById(command.paymentId());
         payment.validateConfirm(command.paymentKey(), command.amount());
 
-        TossConfirmResult confirmResult = tossPaymentPort.confirm(
+        tossPaymentPort.confirm(
                 command.paymentKey(),
                 payment.getPaymentId(),
                 command.amount()
@@ -61,7 +64,7 @@ public class PaymentService implements PaymentUseCase {
         SucceededPaymentResult result = SucceededPaymentResult.from(payment);
 
         try {
-            walletPort.pointToWallet(command.paymentId(), command.amount());
+            walletPort.pointToWallet(payment.getUserId(), command.paymentId(), command.amount());
         } catch (Exception e){
             log.error("포인트 적립 실패", e);
             // todo : 포인트 적립 실패 로직
@@ -78,6 +81,14 @@ public class PaymentService implements PaymentUseCase {
         payment.failPayment(command.code(), command.message());
 
         FailPaymentResult result = FailPaymentResult.from(payment);
+        return result;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PaymentInfoResult getPaymentInfo(UUID paymentId) {
+        Payment payment = paymentRepository.findById(paymentId);
+        PaymentInfoResult result = new PaymentInfoResult(payment.getPaymentId(), payment.getAmount());
         return result;
     }
 }

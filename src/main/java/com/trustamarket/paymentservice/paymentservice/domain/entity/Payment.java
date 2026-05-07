@@ -32,8 +32,8 @@ public class Payment extends BaseTimeEntity {
 	@Column(name = "payment_id", nullable = false, updatable = false)
 	private UUID paymentId;
 
-	@Column(name = "charge_id", nullable = false, updatable = false, unique = true)
-	private UUID chargeId;
+	@Column(name = "user_id", nullable = false, updatable = false)
+	private UUID userId;
 
 	@Column(name="payment_key", length = 200)
 	private String paymentKey;
@@ -53,17 +53,18 @@ public class Payment extends BaseTimeEntity {
 	private List<PaymentTx> transactions = new ArrayList<>();
 
 	public static Payment create(
-			UUID chargeId,
+			UUID userId,
+			UUID paymentId,
 			Amount amount
 	) {
 		Payment payment = new Payment();
 
-		payment.paymentId = UUID.randomUUID();
-		payment.chargeId = chargeId;
+		payment.userId = userId;
+		payment.paymentId = paymentId;
 		payment.paymentStatus = PaymentStatus.REQUESTED;
 		payment.amount = amount.value();
 
-		payment.addTransaction(PaymentTx.createRequest(amount));
+		payment.addTransaction(PaymentTx.createRequest(userId, amount));
 		return payment;
 	}
 
@@ -90,7 +91,7 @@ public class Payment extends BaseTimeEntity {
 		this.paymentStatus = PaymentStatus.SUCCESS;
 		this.paymentKey = paymentKey;
 
-		this.addTransaction(PaymentTx.createSuccess(Amount.of(approvedAmount), paymentKey));
+		this.addTransaction(PaymentTx.createSuccess(userId, Amount.of(approvedAmount), paymentKey));
 	}
 
 	public void failPayment(String pgCode,  String pgMessage) {
@@ -99,7 +100,7 @@ public class Payment extends BaseTimeEntity {
 		}
 		this.paymentStatus = PaymentStatus.FAILED;
 
-		this.addTransaction(PaymentTx.createFail(Amount.of(amount), pgCode, pgMessage));
+		this.addTransaction(PaymentTx.createFail(userId, Amount.of(amount), pgCode, pgMessage));
 	}
 
 	private void addTransaction(PaymentTx transaction) {

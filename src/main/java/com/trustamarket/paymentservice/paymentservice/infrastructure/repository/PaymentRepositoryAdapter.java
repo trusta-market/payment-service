@@ -16,8 +16,8 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
     private final PaymentJpaRepository paymentJpaRepository;
 
     @Override
-    public boolean existsByChargeId(UUID chargeId) {
-        return paymentJpaRepository.existsByChargeId(chargeId);
+    public boolean existsByChargeId(UUID paymentId) {
+        return paymentJpaRepository.existsByPaymentId(paymentId);
     }
 
     @Override

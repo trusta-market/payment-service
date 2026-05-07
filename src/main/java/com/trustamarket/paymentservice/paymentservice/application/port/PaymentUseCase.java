@@ -5,10 +5,15 @@ import com.trustamarket.paymentservice.paymentservice.application.dto.command.Fa
 import com.trustamarket.paymentservice.paymentservice.application.dto.command.SucceededPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.CreatePaymentResult;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.FailPaymentResult;
+import com.trustamarket.paymentservice.paymentservice.application.dto.result.PaymentInfoResult;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.SucceededPaymentResult;
+
+import java.util.UUID;
 
 public interface PaymentUseCase {
     CreatePaymentResult createPayment(CreatePaymentCommand command);
     SucceededPaymentResult succeededPayment(SucceededPaymentCommand command);
     FailPaymentResult failPayment(FailPaymentCommand command);
+
+    PaymentInfoResult getPaymentInfo(UUID paymentId);
 }

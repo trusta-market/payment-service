@@ -1,21 +1,26 @@
 package com.trustamarket.paymentservice.paymentservice.infrastructure.wallet.dto;
 
+import com.trustamarket.paymentservice.paymentservice.domain.entity.Payment;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentErrorCode;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentException;
 
 import java.util.UUID;
 
 public record PointWalletRequest (
-    UUID paymentId,
-    long chargedAmount
+        UUID userId,
+        UUID paymentId,
+        long chargeAmount
 ){
     public PointWalletRequest {
-        if(paymentId == null) {
-            throw new IllegalArgumentException("paymentId는 필수값입니다.");
+        if(userId == null) {
+            throw new PaymentException(PaymentErrorCode.USER_ID_REQUIRED);
         }
-        if(chargedAmount <= 0) {
+        if(paymentId == null) {
+            throw new PaymentException(PaymentErrorCode.PAYMENT_ID_REQUIRED);
+        }
+        if(chargeAmount <= 0) {
             //todo : long -> Amount
-            throw new IllegalArgumentException("결제 금액은 0보다 커야 합니다.");
+            throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_AMOUNT);
         }
     }
 }
