@@ -12,7 +12,8 @@ public record PaymentDetailResponse (
         long amount,
         PaymentStatus status,
         String paymentKey,
-        Instant createdAt
+        Instant createdAt,
+        Instant updatedAt
 ) {
     public static PaymentDetailResponse from(PaymentDetailResult result) {
         return new PaymentDetailResponse(
@@ -21,7 +22,8 @@ public record PaymentDetailResponse (
                 result.amount(),
                 result.status(),
                 result.paymentKey(),
-                result.createdAt()
+                result.createdAt(),
+                result.updatedAt()
         );
     }
 }
