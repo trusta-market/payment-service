@@ -13,6 +13,7 @@ public enum PaymentErrorCode implements ErrorCodeSpec {
     INVALID_PAYMENT_AMOUNT("INVALID_PAYMENT_AMOUNT", "결제 금액은 0 이상이어야 합니다.", HttpStatus.BAD_REQUEST, "amount"),
     INVALID_PAYMENT_KEY("INVALID_PAYMENT_KEY", "결제키가 유효하지 않습니다.", HttpStatus.BAD_REQUEST, null),
     PAYMENT_AMOUNT_MISMATCH("PAYMENT_AMOUNT_MISMATCH","PG 승인 금액이 일치하지 않습니다.", HttpStatus.BAD_REQUEST, null),
+    PAYMENT_ACCESS_DENIED("PAYMENT_ACCESS_DENIED", "해당 결제에 대한 접근 권한이 없습니다.", HttpStatus.FORBIDDEN, null),
     PAYMENT_CONFIRM_UNKNOWN("PAYMENT_CONFIRM_UNKNOWN","결제 승인 결과를 확인할 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR, null),
     FAILED_POINT_TO_WALLET("FAILED_POINT_TO_WALLET","충전 포인트 반영에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR, null);
 
