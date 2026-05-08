@@ -4,8 +4,8 @@ import com.trustamarket.common.response.CommonResponse;
 import com.trustamarket.common.response.SlicedResponse;
 import com.trustamarket.common.util.SecurityUtil;
 import com.trustamarket.paymentservice.paymentservice.application.dto.command.FailPaymentCommand;
-import com.trustamarket.paymentservice.paymentservice.application.dto.query.PaymentDetailQuery;
-import com.trustamarket.paymentservice.paymentservice.application.dto.query.SearchPaymentQuery;
+import com.trustamarket.paymentservice.paymentservice.application.dto.command.PaymentDetailCommand;
+import com.trustamarket.paymentservice.paymentservice.domain.repository.condition.PaymentSearchCondition;
 import com.trustamarket.paymentservice.paymentservice.application.dto.command.SucceededPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.FailPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.PaymentDetailResult;
@@ -75,7 +75,7 @@ public class PaymentController {
     ){
         UUID userId = SecurityUtil.getCurrentUserIdOrThrow();
 
-        PaymentDetailQuery command = new PaymentDetailQuery(paymentId, userId);
+        PaymentDetailCommand command = new PaymentDetailCommand(paymentId, userId);
         PaymentDetailResult result = paymentUseCase.getPaymentDetail(command);
         PaymentDetailResponse response = PaymentDetailResponse.from(result);
 
@@ -90,7 +90,7 @@ public class PaymentController {
     ){
         UUID userId =  SecurityUtil.getCurrentUserIdOrThrow();
 
-        SearchPaymentQuery query = new SearchPaymentQuery(
+        PaymentSearchCondition query = new PaymentSearchCondition(
                 request.paymentId(),
                 userId,
                 request.minAmount(),

@@ -2,8 +2,8 @@ package com.trustamarket.paymentservice.paymentservice.application.service;
 
 import com.trustamarket.paymentservice.paymentservice.application.dto.command.CreatePaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.application.dto.command.FailPaymentCommand;
-import com.trustamarket.paymentservice.paymentservice.application.dto.query.PaymentDetailQuery;
-import com.trustamarket.paymentservice.paymentservice.application.dto.query.SearchPaymentQuery;
+import com.trustamarket.paymentservice.paymentservice.application.dto.command.PaymentDetailCommand;
+import com.trustamarket.paymentservice.paymentservice.domain.repository.condition.PaymentSearchCondition;
 import com.trustamarket.paymentservice.paymentservice.application.dto.command.SucceededPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.CreatePaymentResult;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.FailPaymentResult;
@@ -91,7 +91,7 @@ public class PaymentService implements PaymentUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public PaymentDetailResult getPaymentDetail(PaymentDetailQuery command) {
+    public PaymentDetailResult getPaymentDetail(PaymentDetailCommand command) {
         Payment payment = paymentRepository.findById(command.paymentId());
         if(!payment.getUserId().equals(command.userId())) {
             throw new PaymentException(PaymentErrorCode.PAYMENT_ACCESS_DENIED);
@@ -104,7 +104,7 @@ public class PaymentService implements PaymentUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public Slice<SearchPaymentResult> searchPayments(SearchPaymentQuery query, Pageable pageable) {
+    public Slice<SearchPaymentResult> searchPayments(PaymentSearchCondition query, Pageable pageable) {
         Slice<Payment> payments = paymentRepository.searchPayments(query, pageable);
         return payments.map(SearchPaymentResult::from);
     }

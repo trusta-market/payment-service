@@ -1,6 +1,6 @@
 package com.trustamarket.paymentservice.paymentservice.infrastructure.repository;
 
-import com.trustamarket.paymentservice.paymentservice.application.dto.query.SearchPaymentQuery;
+import com.trustamarket.paymentservice.paymentservice.domain.repository.condition.PaymentSearchCondition;
 import com.trustamarket.paymentservice.paymentservice.domain.entity.Payment;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentErrorCode;
 import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentException;
@@ -33,7 +33,7 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
     }
 
     @Override
-    public Slice<Payment> searchPayments(SearchPaymentQuery query, Pageable pageable) {
+    public Slice<Payment> searchPayments(PaymentSearchCondition query, Pageable pageable) {
         Specification<Payment> spec = PaymentSpecification.hasUserId(query.paymentId())
                 .and(PaymentSpecification.hasPaymentId(query.paymentId()))
                 .and(PaymentSpecification.hasStatusEq(query.status()))
