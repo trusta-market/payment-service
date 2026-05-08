@@ -34,12 +34,10 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
 
     @Override
     public Slice<Payment> searchPayments(PaymentSearchQuery query, Pageable pageable) {
-        Specification<Payment> spec = PaymentSpecification.hasUserId(query.paymentId())
+        Specification<Payment> spec = PaymentSpecification.hasUserId(query.userId())
                 .and(PaymentSpecification.hasPaymentId(query.paymentId()))
                 .and(PaymentSpecification.hasStatusEq(query.status()))
                 .and(PaymentSpecification.amountBetween(query.minAmount(), query.maxAmount()));
-
-        paymentJpaRepository.findAll(spec, pageable);
 
         return paymentJpaRepository.findAll(spec, pageable);
     }
