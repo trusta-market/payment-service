@@ -2,6 +2,8 @@ package com.trustamarket.paymentservice.paymentservice.domain.entity;
 
 import com.trustamarket.common.domain.BaseTimeEntity;
 import com.trustamarket.paymentservice.paymentservice.domain.enums.PayoutStatus;
+import com.trustamarket.paymentservice.paymentservice.domain.exception.PaymentException;
+import com.trustamarket.paymentservice.paymentservice.domain.exception.PayoutErrorCode;
 import com.trustamarket.paymentservice.paymentservice.domain.vo.Amount;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,6 +34,12 @@ public class Payout extends BaseTimeEntity {
     @Column(name = "user_id", nullable = false, updatable = false)
     private UUID userId;
 
+    @Column(name = "bank_code", length = 30)
+    private String bankCode;
+
+    @Column(name = "account_number", length = 30)
+    private String accountNumber;
+
     @Column(name = "amount", nullable = false)
     private long amount;
 
@@ -55,21 +63,21 @@ public class Payout extends BaseTimeEntity {
 
     public void process() {
         if (this.status != PayoutStatus.REQUESTED) {
-            throw new IllegalStateException("출금 상태 전이 오류");
+            throw new PaymentException(PayoutErrorCode.INVALID_PAYOUT_STATUS);
         }
         this.status = PayoutStatus.PROCESSING;
     }
 
     public void complete() {
         if (this.status != PayoutStatus.PROCESSING) {
-            throw new IllegalStateException("출금 상태 전이 오류");
+            throw new PaymentException(PayoutErrorCode.INVALID_PAYOUT_STATUS);
         }
         this.status = PayoutStatus.SUCCESS;
     }
 
     public void fail(String reason) {
         if (this.status != PayoutStatus.REQUESTED && this.status != PayoutStatus.PROCESSING) {
-            throw new IllegalStateException("출금 상태 전이 오류");
+            throw new PaymentException(PayoutErrorCode.INVALID_PAYOUT_STATUS);
         }
         this.status = PayoutStatus.FAILED;
     }
