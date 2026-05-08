@@ -16,7 +16,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -43,24 +42,11 @@ public class PayoutTx extends BaseCreatedEntity {
     @Column(name = "failure_reason", length = 255)
     private String failureReason;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt;
-
     public static PayoutTx createRequest(Amount amount) {
         PayoutTx tx = new PayoutTx();
         tx.payoutTxId = UUID.randomUUID();
         tx.txType = PayoutTxType.REQUESTED;
         tx.amount = amount.value();
-        tx.createdAt = Instant.now();
-        return tx;
-    }
-
-    public static PayoutTx createProcessing(Amount amount) {
-        PayoutTx tx = new PayoutTx();
-        tx.payoutTxId = UUID.randomUUID();
-        tx.txType = PayoutTxType.PROCESSING;
-        tx.amount = amount.value();
-        tx.createdAt = Instant.now();
         return tx;
     }
 
@@ -69,7 +55,6 @@ public class PayoutTx extends BaseCreatedEntity {
         tx.payoutTxId = UUID.randomUUID();
         tx.txType = PayoutTxType.SUCCESS;
         tx.amount = amount.value();
-        tx.createdAt = Instant.now();
         return tx;
     }
 
@@ -79,7 +64,6 @@ public class PayoutTx extends BaseCreatedEntity {
         tx.txType = PayoutTxType.FAILED;
         tx.amount = amount.value();
         tx.failureReason = failureReason;
-        tx.createdAt = Instant.now();
         return tx;
     }
 

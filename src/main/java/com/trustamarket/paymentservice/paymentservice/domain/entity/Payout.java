@@ -61,22 +61,15 @@ public class Payout extends BaseTimeEntity {
         return payout;
     }
 
-    public void process() {
-        if (this.status != PayoutStatus.REQUESTED) {
-            throw new PaymentException(PayoutErrorCode.INVALID_PAYOUT_STATUS);
-        }
-        this.status = PayoutStatus.PROCESSING;
-    }
-
     public void complete() {
-        if (this.status != PayoutStatus.PROCESSING) {
+        if (this.status != PayoutStatus.REQUESTED) {
             throw new PaymentException(PayoutErrorCode.INVALID_PAYOUT_STATUS);
         }
         this.status = PayoutStatus.SUCCESS;
     }
 
     public void fail(String reason) {
-        if (this.status != PayoutStatus.REQUESTED && this.status != PayoutStatus.PROCESSING) {
+        if (this.status != PayoutStatus.REQUESTED) {
             throw new PaymentException(PayoutErrorCode.INVALID_PAYOUT_STATUS);
         }
         this.status = PayoutStatus.FAILED;
