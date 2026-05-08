@@ -4,9 +4,9 @@ import com.trustamarket.common.response.CommonResponse;
 import com.trustamarket.common.response.SlicedResponse;
 import com.trustamarket.common.util.SecurityUtil;
 import com.trustamarket.paymentservice.paymentservice.application.dto.command.FailPaymentCommand;
+import com.trustamarket.paymentservice.paymentservice.application.dto.command.SucceededPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.application.dto.query.PaymentDetailQuery;
 import com.trustamarket.paymentservice.paymentservice.application.dto.query.PaymentSearchQuery;
-import com.trustamarket.paymentservice.paymentservice.application.dto.command.SucceededPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.FailPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.PaymentDetailResult;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.SearchPaymentResult;
@@ -31,12 +31,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.UUID;
 
 @RestController
-@RestControllerAdvice
 @RequestMapping("/api/v1/payments")
 @RequiredArgsConstructor
 public class PaymentController {
