@@ -2,8 +2,8 @@ package com.trustamarket.paymentservice.paymentservice.application.port;
 
 import com.trustamarket.paymentservice.paymentservice.application.dto.command.CreatePaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.application.dto.command.FailPaymentCommand;
-import com.trustamarket.paymentservice.paymentservice.application.dto.command.PaymentDetailCommand;
-import com.trustamarket.paymentservice.paymentservice.domain.repository.condition.PaymentSearchCondition;
+import com.trustamarket.paymentservice.paymentservice.application.dto.query.PaymentDetailQuery;
+import com.trustamarket.paymentservice.paymentservice.application.dto.query.PaymentSearchQuery;
 import com.trustamarket.paymentservice.paymentservice.application.dto.command.SucceededPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.CreatePaymentResult;
 import com.trustamarket.paymentservice.paymentservice.application.dto.result.FailPaymentResult;
@@ -22,8 +22,8 @@ public interface PaymentUseCase {
     FailPaymentResult failPayment(FailPaymentCommand command);
 
     //조회
-    PaymentDetailResult getPaymentDetail(PaymentDetailCommand query);
-    Slice<SearchPaymentResult> searchPayments(PaymentSearchCondition query, Pageable pageable);
+    PaymentDetailResult getPaymentDetail(PaymentDetailQuery query);
+    Slice<SearchPaymentResult> searchPayments(PaymentSearchQuery query, Pageable pageable);
 
     //프론트 결제정보 전달 목적
     PaymentInfoResult getPaymentInfo(UUID paymentId);

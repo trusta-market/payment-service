@@ -1,10 +1,10 @@
-package com.trustamarket.paymentservice.paymentservice.domain.repository.condition;
+package com.trustamarket.paymentservice.paymentservice.application.dto.query;
 
 import com.trustamarket.paymentservice.paymentservice.domain.enums.PaymentStatus;
 
 import java.util.UUID;
 
-public record PaymentSearchCondition(
+public record PaymentSearchQuery(
         UUID paymentId,
         UUID userId,
         long minAmount,
