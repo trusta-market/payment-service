@@ -1,5 +1,6 @@
 package com.trustamarket.paymentservice.paymentservice.domain.entity;
 
+import com.trustamarket.common.domain.BaseTimeEntity;
 import com.trustamarket.paymentservice.paymentservice.domain.enums.PayoutStatus;
 import com.trustamarket.paymentservice.paymentservice.domain.vo.Amount;
 import jakarta.persistence.Column;
@@ -19,14 +20,14 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_payouts")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Payout extends BaseTimeEntity{
+public class Payout extends BaseTimeEntity {
 
     @Id
     @Column(name = "payout_id", nullable = false, updatable = false)
     private UUID payoutId;
 
-    @Column(name = "wallet_id", nullable = false, updatable = false)
-    private UUID walletId;
+    @Column(name = "point_tx_history_id", nullable = false, updatable = false)
+    private UUID pointTxHistoryId;
 
     @Column(name = "user_id", nullable = false, updatable = false)
     private UUID userId;
@@ -42,10 +43,10 @@ public class Payout extends BaseTimeEntity{
     @Column(name = "version", nullable = false)
     private Integer version;
 
-    public static Payout create(UUID walletId, UUID userId, Amount amount) {
+    public static Payout create(UUID pointTxHistoryId, UUID userId, Amount amount) {
         Payout payout = new Payout();
         payout.payoutId = UUID.randomUUID();
-        payout.walletId = walletId;
+        payout.pointTxHistoryId = pointTxHistoryId;
         payout.userId = userId;
         payout.amount = amount.value();
         payout.status = PayoutStatus.REQUESTED;

@@ -1,5 +1,6 @@
 package com.trustamarket.paymentservice.paymentservice.domain.entity;
 
+import com.trustamarket.common.domain.BaseCreatedEntity;
 import com.trustamarket.paymentservice.paymentservice.domain.enums.PayoutTxType;
 import com.trustamarket.paymentservice.paymentservice.domain.vo.Amount;
 import jakarta.persistence.Column;
@@ -22,7 +23,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_payout_transactions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PayoutTx extends BaseCreatedEntity{
+public class PayoutTx extends BaseCreatedEntity {
 
     @Id
     @Column(name = "payout_tx_id", nullable = false, updatable = false)
