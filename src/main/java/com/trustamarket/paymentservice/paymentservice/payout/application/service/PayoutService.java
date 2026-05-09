@@ -9,6 +9,7 @@ import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.Pa
 import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.PayoutException;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.repository.PayoutRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +22,18 @@ public class PayoutService implements PayoutUseCase {
     @Override
     @Transactional
     public CreatePayoutResult createPayout(CreatePayoutCommand command) {
-            if (payoutRepository.existsByPointTxHistory(command.pointTxRequestHistoryId())){
-                throw new PayoutException(PayoutErrorCode.DUPLICATE_PAYOUT_REQUEST);
-            }
-            Payout payout = Payout.create(command.userId(), command.pointTxRequestHistoryId(), Amount.of(command.withdrawAmount()));
-            Payout savedPayout = payoutRepository.saveAndFlush(payout);
+        try {
+            Payout payout = Payout.create(
+                    command.userId(),
+                    command.pointTxRequestHistoryId(),
+                    Amount.of(command.withdrawAmount())
+            );
+            Payout saved = payoutRepository.saveAndFlush(payout);
 
-            return CreatePayoutResult.from(savedPayout);
+            return CreatePayoutResult.from(saved);
+        } catch (DataIntegrityViolationException e) {
+            throw new PayoutException(PayoutErrorCode.DUPLICATE_PAYOUT_REQUEST);
+            // TODO: PayoutErrorCode.DUPLICATE_PAYOUT_REQUEST 추가 필요
+        }
     }
 }

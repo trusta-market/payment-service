@@ -28,7 +28,7 @@ public class Payout extends BaseTimeEntity {
     @Column(name = "payout_id", nullable = false, updatable = false)
     private UUID payoutId;
 
-    @Column(name = "point_tx_request_history_id", nullable = false, updatable = false)
+    @Column(name = "point_tx_request_history_id", nullable = false, unique = true)
     private UUID pointTxRequestHistoryId;
 
     @Column(name = "user_id", nullable = false, updatable = false)
