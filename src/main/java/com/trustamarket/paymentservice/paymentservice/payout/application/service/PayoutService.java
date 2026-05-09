@@ -5,6 +5,8 @@ import com.trustamarket.paymentservice.paymentservice.payout.application.dto.com
 import com.trustamarket.paymentservice.paymentservice.payout.application.dto.result.CreatePayoutResult;
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.PayoutUseCase;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.entity.Payout;
+import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.PayoutErrorCode;
+import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.PayoutException;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.repository.PayoutRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,9 @@ public class PayoutService implements PayoutUseCase {
     @Override
     @Transactional
     public CreatePayoutResult createPayout(CreatePayoutCommand command) {
+            if (payoutRepository.existsByPointTxHistory(command.pointTxRequestHistoryId())){
+                throw new PayoutException(PayoutErrorCode.DUPLICATE_PAYOUT_REQUEST);
+            }
             Payout payout = Payout.create(command.userId(), command.pointTxRequestHistoryId(), Amount.of(command.withdrawAmount()));
             Payout savedPayout = payoutRepository.saveAndFlush(payout);
 

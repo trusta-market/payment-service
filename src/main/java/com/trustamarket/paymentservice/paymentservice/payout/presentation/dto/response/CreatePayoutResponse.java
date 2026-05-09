@@ -13,7 +13,7 @@ public record CreatePayoutResponse(
 ) {
     public static CreatePayoutResponse from(CreatePayoutResult result) {
         return new CreatePayoutResponse(
-                result.userId(),
+                result.payoutId(),
                 result.pointTxRequestHistoryId(),
                 result.withdrawAmount(),
                 result.createdAt()

@@ -6,14 +6,14 @@ import java.time.Instant;
 import java.util.UUID;
 
 public record CreatePayoutResult(
-        UUID userId,
+        UUID payoutId,
         UUID pointTxRequestHistoryId,
         long withdrawAmount,
         Instant createdAt
 ) {
     public static CreatePayoutResult from(Payout payout) {
         return new CreatePayoutResult(
-                payout.getUserId(),
+                payout.getPayoutId(),
                 payout.getPointTxRequestHistoryId(),
                 payout.getAmount(),
                 payout.getCreatedAt()

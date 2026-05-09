@@ -51,10 +51,10 @@ public class Payout extends BaseTimeEntity {
     @Column(name = "version", nullable = false)
     private Integer version;
 
-    public static Payout create(UUID pointTxHistoryId, UUID userId, Amount amount) {
+    public static Payout create(UUID pointTxRequestHistoryId, UUID userId, Amount amount) {
         Payout payout = new Payout();
         payout.payoutId = UUID.randomUUID();
-        payout.pointTxRequestHistoryId = pointTxHistoryId;
+        payout.pointTxRequestHistoryId = pointTxRequestHistoryId;
         payout.userId = userId;
         payout.amount = amount.value();
         payout.status = PayoutStatus.REQUESTED;
