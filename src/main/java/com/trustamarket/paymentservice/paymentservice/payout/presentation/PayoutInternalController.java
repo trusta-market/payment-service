@@ -24,7 +24,7 @@ public class PayoutInternalController {
 
     @PostMapping
     public ResponseEntity<CommonResponse<CreatePayoutResponse>> createPayout(@Valid @RequestBody CreatePayoutRequest request){
-        CreatePayoutCommand command = new CreatePayoutCommand(request.userId(), request.pointTxHistoryId(), request.withdrawAmount());
+        CreatePayoutCommand command = new CreatePayoutCommand(request.userId(), request.pointTxRequestHistoryId(), request.withdrawAmount());
         CreatePayoutResult result = payoutUseCase.createPayout(command);
         CreatePayoutResponse response = CreatePayoutResponse.from(result);
 

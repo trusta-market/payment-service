@@ -19,7 +19,7 @@ public class PayoutService implements PayoutUseCase {
     @Override
     @Transactional
     public CreatePayoutResult createPayout(CreatePayoutCommand command) {
-            Payout payout = Payout.create(command.userId(), command.pointTxHistoryId(), Amount.of(command.withdrawAmount()));
+            Payout payout = Payout.create(command.userId(), command.pointTxRequestHistoryId(), Amount.of(command.withdrawAmount()));
             Payout savedPayout = payoutRepository.saveAndFlush(payout);
 
             return CreatePayoutResult.from(savedPayout);

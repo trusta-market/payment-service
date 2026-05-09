@@ -7,14 +7,14 @@ import java.util.UUID;
 
 public record CreatePayoutCommand (
         UUID userId,
-        UUID pointTxHistoryId,
+        UUID pointTxRequestHistoryId,
         long withdrawAmount
 ) {
     public CreatePayoutCommand {
         if(userId == null){
             throw new PayoutException(PayoutErrorCode.INVALID_USER_ID);
         }
-        if(pointTxHistoryId == null) {
+        if(pointTxRequestHistoryId == null) {
             throw new PayoutException(PayoutErrorCode.INVALID_POINT_TX_HISTORY_ID);
         }
         if(withdrawAmount <= 0){

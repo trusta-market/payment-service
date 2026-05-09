@@ -7,14 +7,14 @@ import java.util.UUID;
 
 public record CreatePayoutResult(
         UUID userId,
-        UUID pointTxHistoryId,
+        UUID pointTxRequestHistoryId,
         long withdrawAmount,
         Instant createdAt
 ) {
     public static CreatePayoutResult from(Payout payout) {
         return new CreatePayoutResult(
                 payout.getUserId(),
-                payout.getPointTxHistoryId(),
+                payout.getPointTxRequestHistoryId(),
                 payout.getAmount(),
                 payout.getCreatedAt()
         );
