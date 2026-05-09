@@ -5,6 +5,9 @@ import org.springframework.http.HttpStatus;
 
 public enum PayoutErrorCode implements ErrorCodeSpec {
 
+    INVALID_USER_ID("INVALID_USER_ID", "userId는 필수값입니다.", HttpStatus.BAD_REQUEST, null),
+    INVALID_POINT_TX_HISTORY_ID("INVALID_POINT_TX_HISTORY_ID", "pointTxHistoryId는 필수값입니다.", HttpStatus.BAD_REQUEST, null),
+    INVALID_WITHDRAW_AMOUNT("INVALID_WITHDRAW_AMOUNT", "출금액은 0보다 커야합니다.", HttpStatus.BAD_REQUEST, null),
     INVALID_PAYOUT_STATUS("INVALID_PAYOUT_STATUS","출금 상태 전이 오류입니다.", HttpStatus.CONFLICT, null);
 
     private final String code;
