@@ -38,8 +38,11 @@ public class PayoutEventHandler {
             if(!account.isVerified()){
                 payout.fail("출금 계좌 인증이 완료되지 않았습니다.");
                 payoutRepository.save(payout);
+                PayoutCompletedResult result = PayoutCompletedResult.from(payout);
+                walletPort.payoutCompleted(result);
                 return;
             }
+
             PgPayoutRequest request = PgPayoutRequest.of(payout, account);
             PgPayoutResult pgResult = pgClientPort.requestPayout(request);
 
