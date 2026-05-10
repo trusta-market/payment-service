@@ -3,7 +3,6 @@ package com.trustamarket.paymentservice.paymentservice.payout.infrastructure.pgM
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.pgClient.PgClientPort;
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.pgClient.PgPayoutResult;
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.user.UserAccount;
-import com.trustamarket.paymentservice.paymentservice.payout.domain.entity.Payout;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.enums.PayoutStatus;
 import org.springframework.stereotype.Component;
 
@@ -11,9 +10,9 @@ import org.springframework.stereotype.Component;
 public class PgMockClient implements PgClientPort {
 
     @Override
-    public PgPayoutResult requestPayout(Payout payout, UserAccount account) {
+    public PgPayoutResult requestPayout(PgPayoutRequest request, UserAccount account) {
 
-        // 처리 시간 시뮬레이션
+        // 처리 시간 시뮬레이션 3초
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {

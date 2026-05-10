@@ -10,6 +10,7 @@ import com.trustamarket.paymentservice.paymentservice.payout.application.port.ou
 import com.trustamarket.paymentservice.paymentservice.payout.domain.entity.Payout;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.enums.PayoutStatus;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.repository.PayoutRepository;
+import com.trustamarket.paymentservice.paymentservice.payout.infrastructure.pgMock.PgPayoutRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -33,8 +34,10 @@ public class PayoutEventHandler {
         Payout payout = payoutRepository.findById(event.payoutId());
 
         try {
+            PgPayoutRequest request = new  PgPayoutRequest(payout.getPayoutId(), payout.getAmount());
+
             UserAccount account = userAccountPort.getUserAccount(payout.getUserId());
-            PgPayoutResult pgResult = pgClientPort.requestPayout(payout, account);
+            PgPayoutResult pgResult = pgClientPort.requestPayout(request, account);
 
             if (pgResult.status() == PayoutStatus.SUCCESS) {
                 payout.complete();
