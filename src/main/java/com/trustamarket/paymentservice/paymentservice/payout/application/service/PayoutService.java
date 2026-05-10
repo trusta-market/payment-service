@@ -3,12 +3,14 @@ package com.trustamarket.paymentservice.paymentservice.payout.application.servic
 import com.trustamarket.paymentservice.paymentservice.payment.domain.vo.Amount;
 import com.trustamarket.paymentservice.paymentservice.payout.application.dto.command.CreatePayoutCommand;
 import com.trustamarket.paymentservice.paymentservice.payout.application.dto.result.CreatePayoutResult;
-import com.trustamarket.paymentservice.paymentservice.payout.application.port.PayoutUseCase;
+import com.trustamarket.paymentservice.paymentservice.payout.application.event.PayoutRequestedEvent;
+import com.trustamarket.paymentservice.paymentservice.payout.application.port.in.PayoutUseCase;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.entity.Payout;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.PayoutErrorCode;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.PayoutException;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.repository.PayoutRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PayoutService implements PayoutUseCase {
 
     private final PayoutRepository payoutRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -28,9 +31,11 @@ public class PayoutService implements PayoutUseCase {
                     command.pointTxRequestHistoryId(),
                     Amount.of(command.withdrawAmount())
             );
-            Payout saved = payoutRepository.saveAndFlush(payout);
+            Payout savedPayout = payoutRepository.saveAndFlush(payout);
 
-            return CreatePayoutResult.from(saved);
+            eventPublisher.publishEvent(new PayoutRequestedEvent(savedPayout.getPayoutId()));
+
+            return CreatePayoutResult.from(savedPayout);
         } catch (DataIntegrityViolationException e) {
             throw new PayoutException(PayoutErrorCode.DUPLICATE_PAYOUT_REQUEST);
             // TODO: PayoutErrorCode.DUPLICATE_PAYOUT_REQUEST 추가 필요
