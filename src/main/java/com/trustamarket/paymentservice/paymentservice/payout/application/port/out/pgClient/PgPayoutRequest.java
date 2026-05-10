@@ -13,6 +13,9 @@ public record PgPayoutRequest (
         String accountHolder
 ) {
     public static PgPayoutRequest of(Payout payout, UserAccount user){
+        if(payout.getAmount() <= 0) {
+            throw new IllegalArgumentException("금액은 0보다 커야 합니다.");
+        }
         return new PgPayoutRequest(
                 payout.getPayoutId(),
                 payout.getAmount(),
