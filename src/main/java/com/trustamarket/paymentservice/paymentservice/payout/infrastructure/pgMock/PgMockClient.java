@@ -19,6 +19,8 @@ public class PgMockClient implements PgClientPort {
             Thread.currentThread().interrupt();
         }
 
+        //todo: 응답 금액 검증 필요
+
         // 95% 성공
         if (Math.random() > 0.05) {
             return new PgPayoutResult(PayoutStatus.SUCCESS, null);
