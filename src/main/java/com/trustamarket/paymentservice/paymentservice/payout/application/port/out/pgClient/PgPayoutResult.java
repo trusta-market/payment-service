@@ -5,4 +5,9 @@ import com.trustamarket.paymentservice.paymentservice.payout.domain.enums.Payout
 public record PgPayoutResult(
         PayoutStatus status,
         String failReason
-) {}
+) {
+    public PgPayoutResult(PayoutStatus status, String failReason) {
+        this.status = status;
+        this.failReason = failReason;
+    }
+}

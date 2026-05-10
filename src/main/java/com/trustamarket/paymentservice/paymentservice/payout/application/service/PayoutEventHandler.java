@@ -34,10 +34,9 @@ public class PayoutEventHandler {
         Payout payout = payoutRepository.findById(event.payoutId());
 
         try {
-            PgPayoutRequest request = new  PgPayoutRequest(payout.getPayoutId(), payout.getAmount());
-
             UserAccount account = userAccountPort.getUserAccount(payout.getUserId());
-            PgPayoutResult pgResult = pgClientPort.requestPayout(request, account);
+            PgPayoutRequest request = PgPayoutRequest.of(payout, account);
+            PgPayoutResult pgResult = pgClientPort.requestPayout(request);
 
             if (pgResult.status() == PayoutStatus.SUCCESS) {
                 payout.complete();

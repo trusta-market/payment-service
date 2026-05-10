@@ -1,6 +1,5 @@
 package com.trustamarket.paymentservice.paymentservice.payout.application.service;
 
-import com.trustamarket.paymentservice.paymentservice.payment.domain.vo.Amount;
 import com.trustamarket.paymentservice.paymentservice.payout.application.dto.command.CreatePayoutCommand;
 import com.trustamarket.paymentservice.paymentservice.payout.application.dto.result.CreatePayoutResult;
 import com.trustamarket.paymentservice.paymentservice.payout.application.event.PayoutRequestedEvent;
@@ -29,7 +28,7 @@ public class PayoutService implements PayoutUseCase {
             Payout payout = Payout.create(
                     command.userId(),
                     command.pointTxRequestHistoryId(),
-                    Amount.of(command.withdrawAmount())
+                    command.withdrawAmount()
             );
             Payout savedPayout = payoutRepository.saveAndFlush(payout);
 

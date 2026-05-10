@@ -7,5 +7,5 @@ import java.util.UUID;
 public interface PayoutRepository {
     Payout saveAndFlush(Payout payout);
     Payout findById(UUID payoutId);
-    boolean existsByPointTxHistory(UUID pointTxRequestHistoryId);
+    boolean existsByPointTxRequestHistoryId(UUID pointTxRequestHistoryId);
 }

@@ -2,9 +2,9 @@ package com.trustamarket.paymentservice.paymentservice.payout.domain.entity;
 
 import com.trustamarket.common.domain.BaseTimeEntity;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.enums.PayoutStatus;
-import com.trustamarket.paymentservice.paymentservice.payment.domain.exception.PaymentException;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.PayoutErrorCode;
-import com.trustamarket.paymentservice.paymentservice.payment.domain.vo.Amount;
+import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.PayoutException;
+import com.trustamarket.paymentservice.paymentservice.payout.domain.vo.Amount;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -63,14 +63,14 @@ public class Payout extends BaseTimeEntity {
 
     public void complete() {
         if (this.status != PayoutStatus.REQUESTED) {
-            throw new PaymentException(PayoutErrorCode.INVALID_PAYOUT_STATUS);
+            throw new PayoutException(PayoutErrorCode.INVALID_PAYOUT_STATUS);
         }
         this.status = PayoutStatus.SUCCESS;
     }
 
     public void fail(String reason) {
         if (this.status != PayoutStatus.REQUESTED) {
-            throw new PaymentException(PayoutErrorCode.INVALID_PAYOUT_STATUS);
+            throw new PayoutException(PayoutErrorCode.INVALID_PAYOUT_STATUS);
         }
         this.status = PayoutStatus.FAILED;
     }
