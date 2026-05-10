@@ -12,9 +12,16 @@ import java.util.UUID;
 public class PayoutRepositoryAdapter implements PayoutRepository {
     private final PayoutJpaRepository payoutJpaRepository;
 
+
+
     @Override
     public Payout saveAndFlush(Payout payout) {
         return payoutJpaRepository.saveAndFlush(payout);
+    }
+
+    @Override
+    public Payout findById(UUID payoutId) {
+        return findById(payoutId);
     }
 
     @Override

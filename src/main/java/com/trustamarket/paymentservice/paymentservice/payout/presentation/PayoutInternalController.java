@@ -3,7 +3,7 @@ package com.trustamarket.paymentservice.paymentservice.payout.presentation;
 import com.trustamarket.common.response.CommonResponse;
 import com.trustamarket.paymentservice.paymentservice.payout.application.dto.command.CreatePayoutCommand;
 import com.trustamarket.paymentservice.paymentservice.payout.application.dto.result.CreatePayoutResult;
-import com.trustamarket.paymentservice.paymentservice.payout.application.port.PayoutUseCase;
+import com.trustamarket.paymentservice.paymentservice.payout.application.port.in.PayoutUseCase;
 import com.trustamarket.paymentservice.paymentservice.payout.presentation.dto.request.CreatePayoutRequest;
 import com.trustamarket.paymentservice.paymentservice.payout.presentation.dto.response.CreatePayoutResponse;
 import jakarta.validation.Valid;
