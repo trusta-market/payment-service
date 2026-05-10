@@ -2,7 +2,8 @@ package com.trustamarket.paymentservice.paymentservice.payout.domain.entity;
 
 import com.trustamarket.common.domain.BaseCreatedEntity;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.enums.PayoutTxType;
-import com.trustamarket.paymentservice.paymentservice.payment.domain.vo.Amount;
+import com.trustamarket.paymentservice.paymentservice.payout.domain.vo.Amount;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,11 +12,14 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -41,6 +45,9 @@ public class PayoutTx extends BaseCreatedEntity {
 
     @Column(name = "failure_reason", length = 255)
     private String failureReason;
+
+    @OneToMany(mappedBy = "payout", cascade = CascadeType.PERSIST)
+    private List<PayoutTx> transactions = new ArrayList<>();
 
     public static PayoutTx createRequest(Amount amount) {
         PayoutTx tx = new PayoutTx();

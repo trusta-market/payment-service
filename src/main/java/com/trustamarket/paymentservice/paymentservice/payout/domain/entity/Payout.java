@@ -66,6 +66,8 @@ public class Payout extends BaseTimeEntity {
             throw new PayoutException(PayoutErrorCode.INVALID_PAYOUT_STATUS);
         }
         this.status = PayoutStatus.SUCCESS;
+
+        this.addTransaction(PayoutTx.createSuccess(Amount.of(this.amount)));
     }
 
     public void fail(String reason) {
@@ -73,5 +75,12 @@ public class Payout extends BaseTimeEntity {
             throw new PayoutException(PayoutErrorCode.INVALID_PAYOUT_STATUS);
         }
         this.status = PayoutStatus.FAILED;
+
+        this.addTransaction(PayoutTx.createFail(Amount.of(this.amount), reason));
+    }
+
+    private void addTransaction(PayoutTx transaction) {
+        this.transactions.add(transaction);
+        transaction.assignPayout(this);
     }
 }
