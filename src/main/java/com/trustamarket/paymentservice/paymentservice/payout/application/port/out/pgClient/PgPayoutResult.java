@@ -1,6 +1,8 @@
 package com.trustamarket.paymentservice.paymentservice.payout.application.port.out.pgClient;
 
+import com.trustamarket.paymentservice.paymentservice.payout.domain.enums.PayoutStatus;
+
 public record PgPayoutResult(
-        String status,
+        PayoutStatus status,
         String failReason
 ) {}

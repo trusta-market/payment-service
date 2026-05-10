@@ -4,6 +4,7 @@ import com.trustamarket.paymentservice.paymentservice.payout.application.port.ou
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.pgClient.PgPayoutResult;
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.user.UserAccount;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.entity.Payout;
+import com.trustamarket.paymentservice.paymentservice.payout.domain.enums.PayoutStatus;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,9 +22,9 @@ public class PgMockClient implements PgClientPort {
 
         // 95% 성공
         if (Math.random() > 0.05) {
-            return new PgPayoutResult("success", null);
+            return new PgPayoutResult(PayoutStatus.SUCCESS, null);
         } else {
-            return new PgPayoutResult("fail", "INSUFFICIENT_BALANCE");
+            return new PgPayoutResult(PayoutStatus.FAILED, "INSUFFICIENT_BALANCE");
         }
     }
 }
