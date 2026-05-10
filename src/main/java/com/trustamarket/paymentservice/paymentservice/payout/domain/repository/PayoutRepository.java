@@ -8,4 +8,5 @@ public interface PayoutRepository {
     Payout saveAndFlush(Payout payout);
     Payout findById(UUID payoutId);
     boolean existsByPointTxRequestHistoryId(UUID pointTxRequestHistoryId);
+    Payout save(Payout payout);
 }

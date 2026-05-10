@@ -35,6 +35,11 @@ public class PayoutEventHandler {
 
         try {
             UserAccount account = userAccountPort.getUserAccount(payout.getUserId());
+            if(!account.isVerified()){
+                payout.fail("출금 계좌 인증이 완료되지 않았습니다.");
+                payoutRepository.save(payout);
+                return;
+            }
             PgPayoutRequest request = PgPayoutRequest.of(payout, account);
             PgPayoutResult pgResult = pgClientPort.requestPayout(request);
 
@@ -43,25 +48,13 @@ public class PayoutEventHandler {
             } else {
                 payout.fail(pgResult.failReason());
             }
+            PayoutCompletedResult result = PayoutCompletedResult.from(payout);
 
-            PayoutCompletedResult result = PayoutCompletedResult.from(
-                    payout.getUserId(),
-                    payout.getPayoutId(),
-                    payout.getPointTxRequestHistoryId(),
-                    payout.getStatus(),
-                    payout.getAmount()
-            );
             walletPort.payoutCompleted(result);
 
         } catch (Exception e) {
             payout.fail(e.getMessage());
-            PayoutCompletedResult result = PayoutCompletedResult.from(
-                    payout.getUserId(),
-                    payout.getPayoutId(),
-                    payout.getPointTxRequestHistoryId(),
-                    payout.getStatus(),
-                    payout.getAmount()
-            );
+            PayoutCompletedResult result = PayoutCompletedResult.from(payout);
             walletPort.payoutCompleted(result);
         }
     }

@@ -18,6 +18,12 @@ public class PayoutRepositoryAdapter implements PayoutRepository {
     }
 
     @Override
+    public Payout save(Payout payout) {
+        payoutJpaRepository.save(payout);
+        return null;
+    }
+
+    @Override
     public Payout findById(UUID payoutId) {
         Payout payout = payoutJpaRepository.findById(payoutId)
                 .orElseThrow(()-> new IllegalArgumentException("출금요청 내용이 존재하지 않습니다."));
