@@ -5,17 +5,21 @@ import com.trustamarket.paymentservice.paymentservice.payout.domain.enums.Payout
 import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.PayoutErrorCode;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.PayoutException;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.vo.Amount;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -50,6 +54,9 @@ public class Payout extends BaseTimeEntity {
     @Version
     @Column(name = "version", nullable = false)
     private Integer version;
+
+    @OneToMany(mappedBy = "payout", cascade = CascadeType.PERSIST)
+    private List<PayoutTx> transactions = new ArrayList<>();
 
     public static Payout create(UUID userId, UUID pointTxRequestHistoryId, Amount amount) {
         Payout payout = new Payout();
