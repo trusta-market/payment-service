@@ -37,7 +37,6 @@ public class PayoutService implements PayoutUseCase {
             return CreatePayoutResult.from(savedPayout);
         } catch (DataIntegrityViolationException e) {
             throw new PayoutException(PayoutErrorCode.DUPLICATE_PAYOUT_REQUEST);
-            // TODO: PayoutErrorCode.DUPLICATE_PAYOUT_REQUEST 추가 필요
         }
     }
 }

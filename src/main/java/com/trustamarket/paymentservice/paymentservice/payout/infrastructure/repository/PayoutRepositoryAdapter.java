@@ -19,7 +19,6 @@ public class PayoutRepositoryAdapter implements PayoutRepository {
 
     @Override
     public Payout save(Payout payout) {
-        payoutJpaRepository.save(payout);
         return payoutJpaRepository.save(payout);
     }
 
