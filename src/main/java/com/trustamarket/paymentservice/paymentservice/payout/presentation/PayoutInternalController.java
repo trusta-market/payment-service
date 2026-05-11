@@ -3,6 +3,7 @@ package com.trustamarket.paymentservice.paymentservice.payout.presentation;
 import com.trustamarket.common.response.CommonResponse;
 import com.trustamarket.paymentservice.paymentservice.payout.application.dto.command.CreatePayoutCommand;
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.in.PayoutUseCase;
+import com.trustamarket.paymentservice.paymentservice.payout.domain.vo.Amount;
 import com.trustamarket.paymentservice.paymentservice.payout.presentation.dto.request.CreatePayoutRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class PayoutInternalController {
 
     @PostMapping
     public CommonResponse<Void> createPayout(@Valid @RequestBody CreatePayoutRequest request){
-        CreatePayoutCommand command = new CreatePayoutCommand(request.userId(), request.pointTxRequestHistoryId(), request.withdrawAmount());
+        CreatePayoutCommand command = new CreatePayoutCommand(request.userId(), request.pointTxRequestHistoryId(), Amount.of(request.withdrawAmount()));
         payoutUseCase.createPayout(command);
 
         return new CommonResponse<>(HttpStatus.NO_CONTENT.value(), null);
