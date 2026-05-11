@@ -83,7 +83,14 @@ public class Payout extends BaseTimeEntity {
         }
         this.status = PayoutStatus.FAILED;
 
-        this.addTransaction(PayoutTx.createFail(Amount.of(this.amount), reason));
+        this.addTransaction(PayoutTx.createFail(Amount.of(this.amount), failureReasonSize(reason)));
+    }
+
+    private String  failureReasonSize(String reason) {
+        if(reason == null) {
+            return "Payout failed";
+        }
+        return reason.length() <= 255 ? reason : reason.substring(0, 255);
     }
 
     private void addTransaction(PayoutTx transaction) {
