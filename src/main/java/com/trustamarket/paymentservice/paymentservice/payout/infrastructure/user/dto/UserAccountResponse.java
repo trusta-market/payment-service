@@ -10,6 +10,6 @@ public record UserAccountResponse (
     @NotNull String accountNumber,
     @NotNull String accountHolder,
     @NotNull String accountType,
+    boolean isDefault,
     boolean isVerified
 ) {}
-
