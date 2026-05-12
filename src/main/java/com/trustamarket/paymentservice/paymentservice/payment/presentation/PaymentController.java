@@ -22,6 +22,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
@@ -71,6 +72,7 @@ public class PaymentController {
     }
 
     //테스트 목적
+    @Profile("mocktest")
     @PostMapping("/{paymentId}/test")
     public CommonResponse<?> testPayment(@PathVariable UUID paymentId){
         boolean success = Math.random() > 0.05;
