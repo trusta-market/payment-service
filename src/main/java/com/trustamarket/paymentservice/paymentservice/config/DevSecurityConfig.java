@@ -6,9 +6,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
-// 인증 미구현 동안 401 우회용. 인증 붙이면 통째로 삭제할 것.
 @Configuration
 @Profile({"local", "dev"})
 public class DevSecurityConfig {
@@ -17,11 +18,17 @@ public class DevSecurityConfig {
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain devFilterChain(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher("/**")
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                .securityMatcher(
+                        "/api/v1/payments/*/success",
+                        "/api/v1/payments/*/failure",
+                        "/demo/**",
+                        "/css/**",
+                        "/favicon.ico",
+                        "/actuator/**"
                 )
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(a -> a.anyRequest().permitAll())
                 .build();
     }
 }

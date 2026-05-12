@@ -7,6 +7,6 @@ import java.util.UUID;
 
 public record CreatePaymentRequest (
         @NotNull UUID userId,
-        @NotNull UUID paymentId,
+        @NotNull UUID pointTxRequestHistoryId,
         @Positive long chargeAmount
 ) {}

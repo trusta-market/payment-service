@@ -2,13 +2,14 @@ package com.trustamarket.paymentservice.paymentservice.payout.application.dto.co
 
 import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.PayoutErrorCode;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.PayoutException;
+import com.trustamarket.paymentservice.paymentservice.payout.domain.vo.Amount;
 
 import java.util.UUID;
 
 public record CreatePayoutCommand (
         UUID userId,
         UUID pointTxRequestHistoryId,
-        long withdrawAmount
+        Amount withdrawAmount
 ) {
     public CreatePayoutCommand {
         if(userId == null){
@@ -16,9 +17,6 @@ public record CreatePayoutCommand (
         }
         if(pointTxRequestHistoryId == null) {
             throw new PayoutException(PayoutErrorCode.INVALID_POINT_TX_HISTORY_ID);
-        }
-        if(withdrawAmount <= 0){
-            throw new PayoutException(PayoutErrorCode.INVALID_WITHDRAW_AMOUNT);
         }
     }
 }

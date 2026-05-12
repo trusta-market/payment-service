@@ -2,23 +2,21 @@ package com.trustamarket.paymentservice.paymentservice.payment.application.dto.c
 
 import com.trustamarket.paymentservice.paymentservice.payment.domain.exception.PaymentErrorCode;
 import com.trustamarket.paymentservice.paymentservice.payment.domain.exception.PaymentException;
+import com.trustamarket.paymentservice.paymentservice.payment.domain.vo.Amount;
 
 import java.util.UUID;
 
 public record CreatePaymentCommand (
         UUID userId,
-        UUID paymentId,
-        long amount
+        UUID pointTxRequestHistoryId,
+        Amount amount
 ){
     public CreatePaymentCommand {
         if(userId == null) {
             throw new PaymentException(PaymentErrorCode.USER_ID_REQUIRED);
         }
-        if(paymentId == null) {
-            throw new PaymentException(PaymentErrorCode.PAYMENT_ID_REQUIRED);
-        }
-        if(amount <= 0) {
-            throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_AMOUNT);
+        if(pointTxRequestHistoryId == null) {
+            throw new PaymentException(PaymentErrorCode.REQUEST_ID_REQUIRED);
         }
     }
 }

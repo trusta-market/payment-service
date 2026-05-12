@@ -2,9 +2,9 @@ package com.trustamarket.paymentservice.paymentservice.payment.application.port;
 
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.command.CreatePaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.command.FailPaymentCommand;
+import com.trustamarket.paymentservice.paymentservice.payment.application.dto.command.SucceededPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.query.PaymentDetailQuery;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.query.PaymentSearchQuery;
-import com.trustamarket.paymentservice.paymentservice.payment.application.dto.command.SucceededPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.CreatePaymentResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.FailPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.PaymentDetailResult;

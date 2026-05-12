@@ -2,7 +2,7 @@ package com.trustamarket.paymentservice.paymentservice.payout.domain.entity;
 
 import com.trustamarket.common.domain.BaseCreatedEntity;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.enums.PayoutTxType;
-import com.trustamarket.paymentservice.paymentservice.payment.domain.vo.Amount;
+import com.trustamarket.paymentservice.paymentservice.payout.domain.vo.Amount;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

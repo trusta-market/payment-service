@@ -18,7 +18,19 @@ public class PayoutRepositoryAdapter implements PayoutRepository {
     }
 
     @Override
-    public boolean existsByPointTxHistory(UUID pointTxRequestHistoryId) {
-        return existsByPointTxHistory(pointTxRequestHistoryId);
+    public Payout save(Payout payout) {
+        return payoutJpaRepository.save(payout);
+    }
+
+    @Override
+    public Payout findById(UUID payoutId) {
+        Payout payout = payoutJpaRepository.findById(payoutId)
+                .orElseThrow(()-> new IllegalArgumentException("출금요청 내용이 존재하지 않습니다."));
+        return payout;
+    }
+
+    @Override
+    public boolean existsByPointTxRequestHistoryId(UUID pointTxRequestHistoryId) {
+        return payoutJpaRepository.existsByPointTxRequestHistoryId(pointTxRequestHistoryId);
     }
 }
