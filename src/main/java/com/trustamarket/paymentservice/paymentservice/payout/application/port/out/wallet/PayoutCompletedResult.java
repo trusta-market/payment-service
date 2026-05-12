@@ -8,9 +8,9 @@ import java.util.UUID;
 public record PayoutCompletedResult (
         UUID userId,
         UUID payoutId,
-        UUID pointTxRequestHistory,
-        PayoutStatus status,
-        long amount
+        UUID pointTxRequestHistoryId,
+        PayoutStatus payoutStatus,
+        long payoutAmount
 ) {
     public static PayoutCompletedResult from(Payout payout) {
         return new PayoutCompletedResult(

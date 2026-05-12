@@ -9,5 +9,5 @@ public record WithdrawCompletedRequest (
         UUID payoutId,
         UUID pointTxRequestHistoryId,
         PayoutStatus  payoutStatus,
-        long withdrawAmount
+        long payoutAmount
 ) {}

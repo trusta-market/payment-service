@@ -18,9 +18,9 @@ public class WithdrawAdapter implements WalletPort {
         WithdrawCompletedRequest request = new WithdrawCompletedRequest(
                 result.userId(),
                 result.payoutId(),
-                result.pointTxRequestHistory(),
-                result.status(),
-                result.amount()
+                result.pointTxRequestHistoryId(),
+                result.payoutStatus(),
+                result.payoutAmount()
         );
 
         return walletFeignClient.withdrawCompleted(request);

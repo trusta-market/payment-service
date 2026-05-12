@@ -65,6 +65,8 @@ public class Payout extends BaseTimeEntity {
         payout.userId = userId;
         payout.amount = amount.value();
         payout.status = PayoutStatus.REQUESTED;
+
+        payout.addTransaction(PayoutTx.createRequest(amount));
         return payout;
     }
 

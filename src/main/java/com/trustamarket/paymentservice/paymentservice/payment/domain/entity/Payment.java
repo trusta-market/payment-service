@@ -32,6 +32,10 @@ public class Payment extends BaseTimeEntity {
 	@Column(name = "payment_id", nullable = false, updatable = false)
 	private UUID paymentId;
 
+	@Column(name = "point_tx_request_history_id", nullable = false, unique = true)
+	private UUID pointTxRequestHistoryId;
+
+
 	@Column(name = "user_id", nullable = false, updatable = false)
 	private UUID userId;
 
@@ -54,13 +58,13 @@ public class Payment extends BaseTimeEntity {
 
 	public static Payment create(
 			UUID userId,
-			UUID paymentId,
+			UUID pointTxRequestHistoryId,
 			Amount amount
 	) {
 		Payment payment = new Payment();
-
+		payment.paymentId = UUID.randomUUID();
+		payment.pointTxRequestHistoryId = pointTxRequestHistoryId;
 		payment.userId = userId;
-		payment.paymentId = paymentId;
 		payment.paymentStatus = PaymentStatus.REQUESTED;
 		payment.amount = amount.value();
 

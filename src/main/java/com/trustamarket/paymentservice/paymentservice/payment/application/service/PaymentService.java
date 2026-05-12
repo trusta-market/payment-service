@@ -2,15 +2,16 @@ package com.trustamarket.paymentservice.paymentservice.payment.application.servi
 
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.command.CreatePaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.command.FailPaymentCommand;
+import com.trustamarket.paymentservice.paymentservice.payment.application.dto.command.SucceededPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.query.PaymentDetailQuery;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.query.PaymentSearchQuery;
-import com.trustamarket.paymentservice.paymentservice.payment.application.dto.command.SucceededPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.CreatePaymentResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.FailPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.PaymentDetailResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.PaymentInfoResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.SearchPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.SucceededPaymentResult;
+import com.trustamarket.paymentservice.paymentservice.payment.application.port.PaymentResponseResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.port.PaymentUseCase;
 import com.trustamarket.paymentservice.paymentservice.payment.application.port.TossPaymentPort;
 import com.trustamarket.paymentservice.paymentservice.payment.application.port.WalletPort;
@@ -18,7 +19,6 @@ import com.trustamarket.paymentservice.paymentservice.payment.domain.entity.Paym
 import com.trustamarket.paymentservice.paymentservice.payment.domain.exception.PaymentErrorCode;
 import com.trustamarket.paymentservice.paymentservice.payment.domain.exception.PaymentException;
 import com.trustamarket.paymentservice.paymentservice.payment.domain.repository.PaymentRepository;
-import com.trustamarket.paymentservice.paymentservice.payment.domain.vo.Amount;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -42,7 +42,7 @@ public class PaymentService implements PaymentUseCase {
     @Transactional
     public CreatePaymentResult createPayment(CreatePaymentCommand command) {
         try{
-            Payment payment = Payment.create(command.userId(), command.paymentId(), Amount.of(command.amount()));
+            Payment payment = Payment.create(command.userId(), command.pointTxRequestHistoryId(), command.amount());
             Payment savedPayment = paymentRepository.saveAndFlush(payment);
 
             CreatePaymentResult result = CreatePaymentResult.from(savedPayment);
@@ -66,16 +66,17 @@ public class PaymentService implements PaymentUseCase {
         );
 
         payment.successPayment(command.paymentKey(), command.amount());
-        SucceededPaymentResult result = SucceededPaymentResult.from(payment);
+        SucceededPaymentResult frontResult = SucceededPaymentResult.from(payment);
+        PaymentResponseResult result = PaymentResponseResult.from(payment);
 
         try {
-            walletPort.pointToWallet(payment.getUserId(), command.paymentId(), command.amount());
+            walletPort.pointToWallet(result);
         } catch (Exception e){
             log.error("포인트 적립 실패", e);
             // todo : 포인트 적립 실패 로직
         }
 
-        return result;
+        return frontResult;
     }
 
     @Override
