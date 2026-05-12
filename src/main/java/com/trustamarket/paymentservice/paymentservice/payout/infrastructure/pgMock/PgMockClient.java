@@ -1,12 +1,14 @@
 package com.trustamarket.paymentservice.paymentservice.payout.infrastructure.pgMock;
 
-import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.pgClient.PgPayoutRequest;
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.pgClient.PgClientPort;
+import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.pgClient.PgPayoutRequest;
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.pgClient.PgPayoutResult;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.enums.PayoutStatus;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("mocktest")
 public class PgMockClient implements PgClientPort {
 
     @Override

@@ -8,11 +8,13 @@ import com.trustamarket.paymentservice.paymentservice.payment.infrastructure.tos
 import com.trustamarket.paymentservice.paymentservice.payment.infrastructure.toss.dto.TossConfirmResponse;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
+@Profile("!mocktest")
 @RequiredArgsConstructor
 public class TossPaymentAdapter implements TossPaymentPort {
 
