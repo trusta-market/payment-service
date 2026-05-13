@@ -21,6 +21,7 @@ public class MockTossPaymentAdapter implements TossPaymentPort {
         }
 
         //처리 시간 시뮬레이션 2초
+        //결제 승인보다는 결제창에서 실패 확률이 더 높지만 편의성을 위해 confirm으로 실패 테스트 진행
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {

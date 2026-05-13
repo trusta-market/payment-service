@@ -53,11 +53,12 @@ public class PaymentService implements PaymentUseCase {
 
     @Override
     @Transactional
+    //결제창 성공
     public SucceededPaymentResult succeededPayment(SucceededPaymentCommand command) {
         Payment payment = paymentRepository.findById(command.paymentId());
         payment.validateConfirm(command.paymentKey(), command.amount());
 
-        try {
+        try { //결제승인 성공
             tossPaymentPort.confirm(
                     command.paymentKey(),
                     command.paymentId(),
@@ -68,15 +69,11 @@ public class PaymentService implements PaymentUseCase {
             SucceededPaymentResult frontResult = SucceededPaymentResult.from(payment);
             PaymentResponseResult result = PaymentResponseResult.from(payment);
 
-            try {
-                walletPort.pointToWallet(result);
-            } catch (Exception e){
-                // todo : 포인트 적립 실패 로직
-            }
-
+            walletPort.pointToWallet(result);
             return frontResult;
 
         } catch (PaymentException e) {
+            //결제승인 실패
             FailPaymentCommand failCommand = new FailPaymentCommand(
                     command.paymentId(),
                     "CONFIRM_FAIL",
@@ -89,6 +86,7 @@ public class PaymentService implements PaymentUseCase {
 
     @Override
     @Transactional
+    //결제창 실패
     public FailPaymentResult failPayment(FailPaymentCommand command) {
         Payment payment = paymentRepository.findById(command.paymentId());
 
@@ -96,6 +94,7 @@ public class PaymentService implements PaymentUseCase {
 
         FailPaymentResult result = FailPaymentResult.from(payment);
         walletPort.pointToWallet(PaymentResponseResult.from(payment));
+
         return result;
     }
 
