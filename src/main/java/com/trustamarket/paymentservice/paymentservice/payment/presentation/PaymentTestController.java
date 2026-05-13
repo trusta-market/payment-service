@@ -1,13 +1,10 @@
 package com.trustamarket.paymentservice.paymentservice.payment.presentation;
 
 import com.trustamarket.common.response.CommonResponse;
-import com.trustamarket.paymentservice.paymentservice.payment.application.dto.command.FailPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.command.SucceededPaymentCommand;
-import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.FailPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.PaymentInfoResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.SucceededPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.port.PaymentUseCase;
-import com.trustamarket.paymentservice.paymentservice.payment.presentation.dto.response.FailPaymentResponse;
 import com.trustamarket.paymentservice.paymentservice.payment.presentation.dto.response.SucceededPaymentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
@@ -28,35 +25,19 @@ public class PaymentTestController {
     private final PaymentUseCase paymentUseCase;
 
     @PostMapping("/{paymentId}/test")
-    public CommonResponse<?> testPayment(@PathVariable UUID paymentId){
-        boolean success = Math.random() > 0.05;
+    public CommonResponse<SucceededPaymentResponse> testPayment(@PathVariable UUID paymentId){
 
-        if (success) {
-            PaymentInfoResult info = paymentUseCase.getPaymentInfo(paymentId);
-            SucceededPaymentCommand command = new SucceededPaymentCommand(
-                    paymentId,
-                    "mock-payment-key-" + paymentId,
-                    info.amount()
-            );
-
-            SucceededPaymentResult result = paymentUseCase.succeededPayment(command);
-            return new CommonResponse<>(
-                    HttpStatus.OK.value(),
-                    SucceededPaymentResponse.from(result)
-            );
-        }
-
-        FailPaymentCommand command = new FailPaymentCommand(
+        PaymentInfoResult info = paymentUseCase.getPaymentInfo(paymentId);
+        SucceededPaymentCommand command = new SucceededPaymentCommand(
                 paymentId,
-                "MOCK_PAYMENT_FAILED",
-                "부하테스트용 mock 결제 실패"
+                "mock-payment-key-" + paymentId,
+                info.amount()
         );
 
-        FailPaymentResult result = paymentUseCase.failPayment(command);
+        SucceededPaymentResult result = paymentUseCase.succeededPayment(command);
         return new CommonResponse<>(
                 HttpStatus.OK.value(),
-                FailPaymentResponse.from(result)
+                SucceededPaymentResponse.from(result)
         );
     }
-
 }
