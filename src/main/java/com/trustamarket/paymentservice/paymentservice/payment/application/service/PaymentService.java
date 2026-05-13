@@ -57,22 +57,34 @@ public class PaymentService implements PaymentUseCase {
         Payment payment = paymentRepository.findById(command.paymentId());
         payment.validateConfirm(command.paymentKey(), command.amount());
 
-        tossPaymentPort.confirm(
-                command.paymentKey(),
-                payment.getPaymentId(),
-                command.amount()
-        );
-
-        payment.successPayment(command.paymentKey(), command.amount());
-        SucceededPaymentResult frontResult = SucceededPaymentResult.from(payment);
-        PaymentResponseResult result = PaymentResponseResult.from(payment);
-
         try {
-            walletPort.pointToWallet(result);
-        } catch (Exception e){
-            // todo : 포인트 적립 실패 로직
+            tossPaymentPort.confirm(
+                    command.paymentKey(),
+                    command.paymentId(),
+                    command.amount()
+            );
+
+            payment.successPayment(command.paymentKey(), command.amount());
+            SucceededPaymentResult frontResult = SucceededPaymentResult.from(payment);
+            PaymentResponseResult result = PaymentResponseResult.from(payment);
+
+            try {
+                walletPort.pointToWallet(result);
+            } catch (Exception e){
+                // todo : 포인트 적립 실패 로직
+            }
+
+            return frontResult;
+
+        } catch (PaymentException e) {
+            FailPaymentCommand failCommand = new FailPaymentCommand(
+                    command.paymentId(),
+                    "CONFIRM_FAIL",
+                    e.getMessage()
+            );
+            failPayment(failCommand);
+            throw e;
         }
-        return frontResult;
     }
 
     @Override
@@ -83,6 +95,7 @@ public class PaymentService implements PaymentUseCase {
         payment.failPayment(command.code(), command.message());
 
         FailPaymentResult result = FailPaymentResult.from(payment);
+        walletPort.pointToWallet(PaymentResponseResult.from(payment));
         return result;
     }
 
