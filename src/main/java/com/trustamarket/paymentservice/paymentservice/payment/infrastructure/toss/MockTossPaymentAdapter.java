@@ -19,6 +19,14 @@ public class MockTossPaymentAdapter implements TossPaymentPort {
         if(amount <= 0 ){
             throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_AMOUNT);
         }
+
+        //처리 시간 시뮬레이션 2초
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
         return new TossConfirmResult(
                 paymentKey,
                 paymentId.toString(),
