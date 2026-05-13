@@ -25,6 +25,7 @@ public class MockTossPaymentAdapter implements TossPaymentPort {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            throw new PaymentException(PaymentErrorCode.PAYMENT_CONFIRM_UNKNOWN);
         }
 
         //승인실패 5%
