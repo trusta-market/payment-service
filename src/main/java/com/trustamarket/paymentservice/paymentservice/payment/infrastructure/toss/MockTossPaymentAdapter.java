@@ -1,9 +1,12 @@
 package com.trustamarket.paymentservice.paymentservice.payment.infrastructure.toss;
 
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.TossConfirmResult;
+import com.trustamarket.paymentservice.paymentservice.payment.application.port.PaymentUseCase;
 import com.trustamarket.paymentservice.paymentservice.payment.application.port.TossPaymentPort;
 import com.trustamarket.paymentservice.paymentservice.payment.domain.exception.PaymentErrorCode;
 import com.trustamarket.paymentservice.paymentservice.payment.domain.exception.PaymentException;
+import com.trustamarket.paymentservice.paymentservice.payout.infrastructure.user.UserFeignClient;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +14,11 @@ import java.util.UUID;
 
 @Component
 @Profile("mocktest")
+@RequiredArgsConstructor
 public class MockTossPaymentAdapter implements TossPaymentPort {
+
+    private final PaymentUseCase paymentUseCase;
+    private final UserFeignClient userFeignClient;
 
     @Override
     public TossConfirmResult confirm(String paymentKey, UUID paymentId, long amount) {
@@ -25,6 +32,11 @@ public class MockTossPaymentAdapter implements TossPaymentPort {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+        }
+
+        //승인실패 5%
+        if (Math.random() <= 0.05) {
+            throw new PaymentException(PaymentErrorCode.PAYMENT_CONFIRM_UNKNOWN);
         }
 
         return new TossConfirmResult(
