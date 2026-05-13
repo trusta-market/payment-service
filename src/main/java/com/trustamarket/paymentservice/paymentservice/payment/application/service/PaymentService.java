@@ -20,7 +20,6 @@ import com.trustamarket.paymentservice.paymentservice.payment.domain.exception.P
 import com.trustamarket.paymentservice.paymentservice.payment.domain.exception.PaymentException;
 import com.trustamarket.paymentservice.paymentservice.payment.domain.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -30,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class PaymentService implements PaymentUseCase {
 
@@ -55,38 +53,48 @@ public class PaymentService implements PaymentUseCase {
 
     @Override
     @Transactional
+    //결제창 성공
     public SucceededPaymentResult succeededPayment(SucceededPaymentCommand command) {
         Payment payment = paymentRepository.findById(command.paymentId());
         payment.validateConfirm(command.paymentKey(), command.amount());
 
-        tossPaymentPort.confirm(
-                command.paymentKey(),
-                payment.getPaymentId(),
-                command.amount()
-        );
+        try { //결제승인 성공
+            tossPaymentPort.confirm(
+                    command.paymentKey(),
+                    command.paymentId(),
+                    command.amount()
+            );
 
-        payment.successPayment(command.paymentKey(), command.amount());
-        SucceededPaymentResult frontResult = SucceededPaymentResult.from(payment);
-        PaymentResponseResult result = PaymentResponseResult.from(payment);
+            payment.successPayment(command.paymentKey(), command.amount());
+            SucceededPaymentResult frontResult = SucceededPaymentResult.from(payment);
+            PaymentResponseResult result = PaymentResponseResult.from(payment);
 
-        try {
             walletPort.pointToWallet(result);
-        } catch (Exception e){
-            log.error("포인트 적립 실패", e);
-            // todo : 포인트 적립 실패 로직
-        }
+            return frontResult;
 
-        return frontResult;
+        } catch (PaymentException e) {
+            //결제승인 실패
+            FailPaymentCommand failCommand = new FailPaymentCommand(
+                    command.paymentId(),
+                    "CONFIRM_FAIL",
+                    e.getMessage()
+            );
+            failPayment(failCommand);
+            throw e;
+        }
     }
 
     @Override
     @Transactional
+    //결제창 실패
     public FailPaymentResult failPayment(FailPaymentCommand command) {
         Payment payment = paymentRepository.findById(command.paymentId());
 
         payment.failPayment(command.code(), command.message());
 
         FailPaymentResult result = FailPaymentResult.from(payment);
+        walletPort.pointToWallet(PaymentResponseResult.from(payment));
+
         return result;
     }
 
