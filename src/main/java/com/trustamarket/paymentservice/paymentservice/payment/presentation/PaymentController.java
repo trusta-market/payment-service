@@ -9,7 +9,6 @@ import com.trustamarket.paymentservice.paymentservice.payment.application.dto.qu
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.query.PaymentSearchQuery;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.FailPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.PaymentDetailResult;
-import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.PaymentInfoResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.SearchPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.SucceededPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.port.PaymentUseCase;
@@ -22,7 +21,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
@@ -30,7 +28,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -69,40 +66,6 @@ public class PaymentController {
         FailPaymentResponse response = FailPaymentResponse.from(result);
 
         return new CommonResponse<>(HttpStatus.OK.value(), response);
-    }
-
-    //테스트 목적
-    @Profile("mocktest")
-    @PostMapping("/{paymentId}/test")
-    public CommonResponse<?> testPayment(@PathVariable UUID paymentId){
-        boolean success = Math.random() > 0.05;
-
-        if (success) {
-            PaymentInfoResult info = paymentUseCase.getPaymentInfo(paymentId);
-            SucceededPaymentCommand command = new SucceededPaymentCommand(
-                    paymentId,
-                    "mock-payment-key-" + paymentId,
-                    info.amount()
-            );
-
-            SucceededPaymentResult result = paymentUseCase.succeededPayment(command);
-            return new CommonResponse<>(
-                    HttpStatus.OK.value(),
-                    SucceededPaymentResponse.from(result)
-            );
-        }
-
-        FailPaymentCommand command = new FailPaymentCommand(
-                paymentId,
-                "MOCK_PAYMENT_FAILED",
-                "부하테스트용 mock 결제 실패"
-        );
-
-        FailPaymentResult result = paymentUseCase.failPayment(command);
-        return new CommonResponse<>(
-                HttpStatus.OK.value(),
-                FailPaymentResponse.from(result)
-        );
     }
 
     @PreAuthorize("hasRole('MEMBER')")
