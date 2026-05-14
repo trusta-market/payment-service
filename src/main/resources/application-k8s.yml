@@ -22,6 +22,20 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
+  # Kafka — 현재 payment-service 는 dependency 없음 (Spring 이 무시).
+  # 다른 서비스들과 일관성 차원 + 향후 도입 시 대비.
+  kafka:
+    bootstrap-servers: kafka.kafka:9092
+    listener:
+      ack-mode: manual
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 eureka:
   client:
