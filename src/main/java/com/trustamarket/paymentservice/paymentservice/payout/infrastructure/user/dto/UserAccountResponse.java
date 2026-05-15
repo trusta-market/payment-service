@@ -6,6 +6,7 @@ import java.util.UUID;
 
 public record UserAccountResponse (
     @NotNull UUID accountId,
+    @NotNull UUID userId,
     @NotNull String bankCode,
     @NotNull String accountNumber,
     @NotNull String accountHolder,
