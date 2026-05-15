@@ -20,6 +20,9 @@ public class UserAccountAdapter implements UserAccountPort {
         CommonResponse<UserAccountResponse> response = userFeignClient.getUserAccount(userId);
         UserAccountResponse data = response.data();
 
+        if(!data.userId().equals(userId)) {
+            throw new IllegalStateException("유저정보가 일치하지 않습니다.");
+        }
         if(data == null){
             //todo : paymentException으로 수정하기
             throw new IllegalStateException("유저의 계좌정보를 찾을 수 없습니다.");
