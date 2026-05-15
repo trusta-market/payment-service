@@ -6,6 +6,11 @@ metadata:
     app: payment-service
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: payment-service
@@ -63,10 +68,10 @@ spec:
           resources:
             requests:
               cpu: 500m
-              memory: 1Gi
+              memory: 2Gi
             limits:
               cpu: 1000m
-              memory: 2Gi
+              memory: 2500Mi
           startupProbe:
             httpGet:
               path: /actuator/health
