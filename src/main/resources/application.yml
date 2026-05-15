@@ -12,6 +12,9 @@ toss:
     secret-key: ${TOSS_SECRET_KEY}
     client-key: ${TOSS_CLIENT_KEY}
     customer-key: ${TOSS_CUSTOMER_KEY}
+  mock:
+    slow-rate: 0.05
+    failure-rate: 0.03
 
 management:
   endpoint:
