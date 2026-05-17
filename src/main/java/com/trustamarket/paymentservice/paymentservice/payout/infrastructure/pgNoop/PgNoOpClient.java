@@ -10,7 +10,7 @@ import com.trustamarket.paymentservice.paymentservice.payout.application.port.ou
 // K8s 프로필 임시 NoOp. PayoutEventHandler DI 만족용 — payout 엔드포인트 호출 시점에 명시적 fail.
 // 실 PG 클라이언트 도입 시 제거.
 @Component
-@Profile("k8s")
+@Profile("k8s & !mocktest")
 public class PgNoOpClient implements PgClientPort {
 
 	@Override
