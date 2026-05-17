@@ -17,11 +17,18 @@ spring:
     password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: p_payment
     open-in-view: false
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    default-schema: p_payment
+    liquibase-schema: p_payment
   # Kafka — 현재 payment-service 는 dependency 없음 (Spring 이 무시).
   # 다른 서비스들과 일관성 차원 + 향후 도입 시 대비.
   kafka:
