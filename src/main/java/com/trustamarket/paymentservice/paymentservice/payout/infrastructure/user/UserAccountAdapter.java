@@ -5,10 +5,12 @@ import com.trustamarket.paymentservice.paymentservice.payout.application.port.ou
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.user.UserAccountPort;
 import com.trustamarket.paymentservice.paymentservice.payout.infrastructure.user.dto.UserAccountResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class UserAccountAdapter implements UserAccountPort {
@@ -21,6 +23,7 @@ public class UserAccountAdapter implements UserAccountPort {
         UserAccountResponse data = response.data();
 
         if(!data.userId().equals(userId)) {
+            log.error(data.toString());
             throw new IllegalStateException("유저정보가 일치하지 않습니다.");
         }
         if(data == null){
