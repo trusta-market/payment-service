@@ -49,6 +49,12 @@ spec:
                 secretKeyRef:
                   name: domain-postgres-secrets
                   key: DB_PASSWORD
+            # DB_HOST — Cloud SQL Private IP (Secret 에서 주입). application-k8s.yml 의 ${DB_HOST:postgres} 와 대응.
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: domain-postgres-secrets
+                  key: DB_HOST
             # TOSS 결제 키 — Secret 'payment-secrets' 미리 생성 필요 (dummy 값 가능).
             - name: TOSS_SECRET_KEY
               valueFrom:
