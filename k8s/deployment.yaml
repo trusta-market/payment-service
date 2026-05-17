@@ -38,7 +38,7 @@ spec:
             - containerPort: 8301
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: "k8s"
+              value: "k8s,mocktest"
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
