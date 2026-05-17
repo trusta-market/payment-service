@@ -2,6 +2,7 @@ package com.trustamarket.paymentservice.paymentservice.payout.application.servic
 
 import com.trustamarket.paymentservice.paymentservice.payout.application.event.PayoutRequestedEvent;
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.pgClient.PgClientPort;
+import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.pgClient.PgPayoutRequest;
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.pgClient.PgPayoutResult;
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.user.UserAccount;
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.user.UserAccountPort;
@@ -10,14 +11,15 @@ import com.trustamarket.paymentservice.paymentservice.payout.application.port.ou
 import com.trustamarket.paymentservice.paymentservice.payout.domain.entity.Payout;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.enums.PayoutStatus;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.repository.PayoutRepository;
-import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.pgClient.PgPayoutRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class PayoutEventHandler {
@@ -35,6 +37,7 @@ public class PayoutEventHandler {
 
         try {
             UserAccount account = userAccountPort.getUserAccount(payout.getUserId());
+            log.info(account.toString());
             if(!account.isVerified()){
                 payout.fail("출금 계좌 인증이 완료되지 않았습니다.");
                 payoutRepository.save(payout);
