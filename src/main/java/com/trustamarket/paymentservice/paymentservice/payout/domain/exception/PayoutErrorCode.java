@@ -10,7 +10,8 @@ public enum PayoutErrorCode implements ErrorCodeSpec {
     INVALID_WITHDRAW_AMOUNT("INVALID_WITHDRAW_AMOUNT", "출금액은 0보다 커야합니다.", HttpStatus.BAD_REQUEST, null),
     DUPLICATE_PAYOUT_REQUEST("DUPLICATE_PAYOUT_REQUEST", "중복된 출금 요청입니다.", HttpStatus.CONFLICT, null),
     DUPLICATE_WITHDRAW_ID("DUPLICATE_WITHDRAW_ID","이미 출금이 존재하는 요청입니다.", HttpStatus.CONFLICT, null),
-    INVALID_PAYOUT_STATUS("INVALID_PAYOUT_STATUS","출금 상태 전이 오류입니다.", HttpStatus.CONFLICT, null);
+    INVALID_PAYOUT_STATUS("INVALID_PAYOUT_STATUS","출금 상태 전이 오류입니다.", HttpStatus.CONFLICT, null),
+    PAYOUT_CONFIRM_UNKNOWN("PAYOUT_CONFIRM_UNKNOWN","출금 승인 결과 오류입니다.", HttpStatus.INTERNAL_SERVER_ERROR, null);
 
     private final String code;
     private final String field;

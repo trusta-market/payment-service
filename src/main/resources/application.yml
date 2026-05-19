@@ -14,7 +14,7 @@ toss:
     customer-key: ${TOSS_CUSTOMER_KEY}
   mock:
     slow-rate: 0.05
-    failure-rate: 0.03
+    failure-rate: 0.01
 
 management:
   endpoint:
