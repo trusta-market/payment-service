@@ -35,12 +35,17 @@ public class PayoutEventHandler {
     public void handle(PayoutRequestedEvent event) {
         Payout payout = payoutRepository.findById(event.payoutId());
 
+        if (payout.getStatus() != PayoutStatus.REQUESTED) {
+            log.warn("[Payout] 이미 처리된 요청. payoutId={}, status={}",
+                    payout.getPayoutId(), payout.getStatus());
+            return;
+        }
+
         try {
             UserAccount account = userAccountPort.getUserAccount(payout.getUserId());
             log.info(account.toString());
             if(!account.isVerified()){
                 payout.fail("출금 계좌 인증이 완료되지 않았습니다.");
-                payoutRepository.save(payout);
                 PayoutCompletedResult result = PayoutCompletedResult.from(payout);
                 walletPort.payoutCompleted(result);
                 return;
@@ -54,14 +59,14 @@ public class PayoutEventHandler {
             } else {
                 payout.fail(pgResult.failReason());
             }
-            PayoutCompletedResult result = PayoutCompletedResult.from(payout);
 
+            PayoutCompletedResult result = PayoutCompletedResult.from(payout);
             walletPort.payoutCompleted(result);
 
         } catch (Exception e) {
             log.error("[Payout] 처리 실패. payoutId={}", payout.getPayoutId(), e);
-            if(!PayoutStatus.FAILED.equals(payout.getStatus())) {
-            payout.fail(e.getMessage());
+            if(PayoutStatus.FAILED.equals(payout.getStatus())) {
+                payout.fail(e.getMessage());
             }
             PayoutCompletedResult result = PayoutCompletedResult.from(payout);
             walletPort.payoutCompleted(result);
