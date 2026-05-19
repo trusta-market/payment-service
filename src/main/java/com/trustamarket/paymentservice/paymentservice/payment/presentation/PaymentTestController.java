@@ -4,7 +4,6 @@ import com.trustamarket.common.response.CommonResponse;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.command.SucceededPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.PaymentInfoResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.SucceededPaymentResult;
-import com.trustamarket.paymentservice.paymentservice.payment.application.port.PaymentFacadeUseCase;
 import com.trustamarket.paymentservice.paymentservice.payment.application.port.PaymentUseCase;
 import com.trustamarket.paymentservice.paymentservice.payment.presentation.dto.response.SucceededPaymentResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PaymentTestController {
 
-    private final PaymentFacadeUseCase paymentFacade;
     private final PaymentUseCase paymentUseCase;
 
     @PostMapping("/{paymentId}/test")
@@ -36,7 +34,7 @@ public class PaymentTestController {
                 info.amount()
         );
 
-        SucceededPaymentResult result = paymentFacade.succeededPayment(command);
+        SucceededPaymentResult result = paymentUseCase.succeededPayment(command);
         return new CommonResponse<>(
                 HttpStatus.OK.value(),
                 SucceededPaymentResponse.from(result)
