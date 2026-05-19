@@ -46,8 +46,7 @@ public class PayoutEventHandler {
             log.info(account.toString());
             if(!account.isVerified()){
                 payout.fail("출금 계좌 인증이 완료되지 않았습니다.");
-                PayoutCompletedResult result = PayoutCompletedResult.from(payout);
-                walletPort.payoutCompleted(result);
+                notifyWalletSafely(payout);
                 return;
             }
 
@@ -60,16 +59,23 @@ public class PayoutEventHandler {
                 payout.fail(pgResult.failReason());
             }
 
-            PayoutCompletedResult result = PayoutCompletedResult.from(payout);
-            walletPort.payoutCompleted(result);
+            notifyWalletSafely(payout);
 
         } catch (Exception e) {
             log.error("[Payout] 처리 실패. payoutId={}", payout.getPayoutId(), e);
-            if(PayoutStatus.FAILED.equals(payout.getStatus())) {
+            if (PayoutStatus.REQUESTED.equals(payout.getStatus())) {
                 payout.fail(e.getMessage());
+                notifyWalletSafely(payout);
             }
+        }
+    }
+    private void notifyWalletSafely(Payout payout) {
+        try {
             PayoutCompletedResult result = PayoutCompletedResult.from(payout);
             walletPort.payoutCompleted(result);
+        } catch (Exception e) {
+            log.error("[Wallet] 출금 결과 알림 실패. payoutId={}, status={}",
+                    payout.getPayoutId(), payout.getStatus(), e);
         }
     }
 }
