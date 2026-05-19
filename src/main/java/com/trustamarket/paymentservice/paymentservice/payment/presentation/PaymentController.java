@@ -11,7 +11,6 @@ import com.trustamarket.paymentservice.paymentservice.payment.application.dto.re
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.PaymentDetailResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.SearchPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.SucceededPaymentResult;
-import com.trustamarket.paymentservice.paymentservice.payment.application.port.PaymentFacadeUseCase;
 import com.trustamarket.paymentservice.paymentservice.payment.application.port.PaymentUseCase;
 import com.trustamarket.paymentservice.paymentservice.payment.presentation.dto.request.SearchPaymentRequest;
 import com.trustamarket.paymentservice.paymentservice.payment.presentation.dto.response.FailPaymentResponse;
@@ -41,7 +40,6 @@ import java.util.UUID;
 public class PaymentController {
 
     private final PaymentUseCase paymentUseCase;
-    private final PaymentFacadeUseCase paymentFacadeUseCase;
 
     @GetMapping("/{paymentId}/success")
     public CommonResponse<SucceededPaymentResponse> successPayment(
@@ -50,7 +48,7 @@ public class PaymentController {
             @RequestParam @Positive long amount
     ){
         SucceededPaymentCommand command = new SucceededPaymentCommand(paymentId, paymentKey, amount);
-        SucceededPaymentResult result = paymentFacadeUseCase.succeededPayment(command);
+        SucceededPaymentResult result = paymentUseCase.succeededPayment(command);
         SucceededPaymentResponse response = SucceededPaymentResponse.from(result);
 
         return new CommonResponse<>(HttpStatus.OK.value(), response);

@@ -10,7 +10,7 @@ import com.trustamarket.paymentservice.paymentservice.payment.application.dto.re
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.PaymentDetailResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.PaymentInfoResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.SearchPaymentResult;
-import com.trustamarket.paymentservice.paymentservice.payment.domain.entity.Payment;
+import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.SucceededPaymentResult;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -18,6 +18,7 @@ import java.util.UUID;
 
 public interface PaymentUseCase {
     CreatePaymentResult createPayment(CreatePaymentCommand command);
+    SucceededPaymentResult succeededPayment(SucceededPaymentCommand command);
     FailPaymentResult failPayment(FailPaymentCommand command);
 
     //조회
@@ -26,8 +27,4 @@ public interface PaymentUseCase {
 
     //프론트 결제정보 전달 목적
     PaymentInfoResult getPaymentInfo(UUID paymentId);
-
-    // Facade에서 호출할 내부용
-    Payment markSuccess(SucceededPaymentCommand command);
-    Payment markFail(FailPaymentCommand command);
 }
