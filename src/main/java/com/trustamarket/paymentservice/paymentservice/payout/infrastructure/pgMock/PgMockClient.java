@@ -6,12 +6,17 @@ import com.trustamarket.paymentservice.paymentservice.payout.application.port.ou
 import com.trustamarket.paymentservice.paymentservice.payout.domain.enums.PayoutStatus;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.PayoutErrorCode;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.PayoutException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
+@Slf4j
 @Component
 @Profile("mocktest")
 public class PgMockClient implements PgClientPort {
@@ -21,6 +26,11 @@ public class PgMockClient implements PgClientPort {
 
     private final Random random = new Random();
 
+    @Retryable(
+            retryFor = PayoutException.class,
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000)
+    )
     @Override
     public PgPayoutResult requestPayout(PgPayoutRequest request) {
 
@@ -36,8 +46,13 @@ public class PgMockClient implements PgClientPort {
             throw new PayoutException(PayoutErrorCode.PAYOUT_CONFIRM_UNKNOWN);
         }
 
-        //todo: 재시도로직 구축시 실패 확률추가
         return new PgPayoutResult(PayoutStatus.SUCCESS, null);
 
+    }
+
+    @Recover
+    public PgPayoutResult recover(PayoutException e, PgPayoutRequest request) {
+        log.error("[PG] 재시도 모두 실패. payoutId={}", request.payoutId(), e);
+        return new PgPayoutResult(PayoutStatus.FAILED, e.getMessage());
     }
 }
