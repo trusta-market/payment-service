@@ -59,7 +59,10 @@ public class PayoutEventHandler {
             walletPort.payoutCompleted(result);
 
         } catch (Exception e) {
+            log.error("[Payout] 처리 실패. payoutId={}", payout.getPayoutId(), e);
+            if(!PayoutStatus.FAILED.equals(payout.getStatus())) {
             payout.fail(e.getMessage());
+            }
             PayoutCompletedResult result = PayoutCompletedResult.from(payout);
             walletPort.payoutCompleted(result);
         }
