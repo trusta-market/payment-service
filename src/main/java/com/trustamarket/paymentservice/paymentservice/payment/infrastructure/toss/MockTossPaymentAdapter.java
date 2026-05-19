@@ -18,8 +18,8 @@ public class MockTossPaymentAdapter implements TossPaymentPort {
     @Value("${toss.mock.slow-rate}")
     private double slowRate;
 
-    @Value("${toss.mock.failure-rate}")
-    private double failureRate;
+//    @Value("${toss.mock.failure-rate}")
+//    private double failureRate;
 
     private final Random random = new Random();
 
@@ -32,9 +32,9 @@ public class MockTossPaymentAdapter implements TossPaymentPort {
 
         simulateDelay();
 
-        if (random.nextDouble() < failureRate) { //PG사 실패 확률
-            throw new PaymentException(PaymentErrorCode.PAYMENT_CONFIRM_UNKNOWN);
-        }
+//        if (random.nextDouble() < failureRate) { //PG사 실패 확률
+//            throw new PaymentException(PaymentErrorCode.PAYMENT_CONFIRM_UNKNOWN);
+//        }
 
         return new TossConfirmResult(paymentKey, paymentId.toString(), amount);
     }
