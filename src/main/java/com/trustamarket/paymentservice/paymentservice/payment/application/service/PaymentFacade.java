@@ -29,9 +29,10 @@ public class PaymentFacade implements PaymentFacadeUseCase {
                     command.amount()
             );
         } catch (PaymentException e) {
-            paymentService.markFail(new FailPaymentCommand(
+            Payment payment = paymentService.markFail(new FailPaymentCommand(
                     command.paymentId(), "CONFIRM_FAIL", e.getMessage()
             ));
+            walletPort.pointToWallet(PaymentResponseResult.from(payment));
             throw e;
         }
 

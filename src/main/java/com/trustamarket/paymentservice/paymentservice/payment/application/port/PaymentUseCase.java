@@ -29,5 +29,5 @@ public interface PaymentUseCase {
 
     // Facade에서 호출할 내부용
     Payment markSuccess(SucceededPaymentCommand command);
-    void markFail(FailPaymentCommand command);
+    Payment markFail(FailPaymentCommand command);
 }

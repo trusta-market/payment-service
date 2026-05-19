@@ -58,10 +58,10 @@ public class PaymentService implements PaymentUseCase {
     }
 
     @Transactional
-    public void markFail(FailPaymentCommand command) {
+    public Payment markFail(FailPaymentCommand command) {
         Payment payment = paymentRepository.findById(command.paymentId());
         payment.failPayment(command.code(), command.message());
-        walletPort.pointToWallet(PaymentResponseResult.from(payment));
+        return payment;
     }
 
     @Override
