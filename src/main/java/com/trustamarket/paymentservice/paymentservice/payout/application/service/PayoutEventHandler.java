@@ -15,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Slf4j
@@ -25,13 +23,13 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class PayoutEventHandler {
 
     private final PayoutRepository payoutRepository;
+    private final PayoutService payoutService;
     private final UserAccountPort userAccountPort;
     private final PgClientPort pgClientPort;
     private final WalletPort walletPort;
 
     @Async
     @TransactionalEventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handle(PayoutRequestedEvent event) {
         Payout payout = payoutRepository.findById(event.payoutId());
 
@@ -43,9 +41,8 @@ public class PayoutEventHandler {
 
         try {
             UserAccount account = userAccountPort.getUserAccount(payout.getUserId());
-            log.info(account.toString());
             if(!account.isVerified()){
-                payout.fail("출금 계좌 인증이 완료되지 않았습니다.");
+                payout = payoutService.fail(payout.getPayoutId(), "출금 계좌 인증이 완료되지 않았습니다.");
                 notifyWalletSafely(payout);
                 return;
             }
@@ -54,21 +51,21 @@ public class PayoutEventHandler {
             PgPayoutResult pgResult = pgClientPort.requestPayout(request);
 
             if (pgResult.status() == PayoutStatus.SUCCESS) {
-                payout.complete();
+                payout = payoutService.success(payout.getPayoutId());
             } else {
-                payout.fail(pgResult.failReason());
+                payout = payoutService.fail(payout.getPayoutId(), pgResult.failReason());
             }
 
             notifyWalletSafely(payout);
 
         } catch (Exception e) {
             log.error("[Payout] 처리 실패. payoutId={}", payout.getPayoutId(), e);
-            if (PayoutStatus.REQUESTED.equals(payout.getStatus())) {
-                payout.fail(e.getMessage());
-                notifyWalletSafely(payout);
-            }
+
+            payout = payoutService.fail(payout.getPayoutId(), e.getMessage());
+            notifyWalletSafely(payout);
         }
     }
+
     private void notifyWalletSafely(Payout payout) {
         try {
             PayoutCompletedResult result = PayoutCompletedResult.from(payout);
