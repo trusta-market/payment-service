@@ -10,7 +10,6 @@ import com.trustamarket.paymentservice.paymentservice.payment.application.dto.re
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.PaymentDetailResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.PaymentInfoResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.SearchPaymentResult;
-import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.SucceededPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.port.PaymentResponseResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.port.PaymentUseCase;
 import com.trustamarket.paymentservice.paymentservice.payment.application.port.TossPaymentPort;
@@ -51,37 +50,18 @@ public class PaymentService implements PaymentUseCase {
         }
     }
 
-    @Override
     @Transactional
-    //결제창 성공
-    public SucceededPaymentResult succeededPayment(SucceededPaymentCommand command) {
+    public Payment markSuccess(SucceededPaymentCommand command) {
         Payment payment = paymentRepository.findById(command.paymentId());
-        payment.validateConfirm(command.paymentKey(), command.amount());
+        payment.successPayment(command.paymentKey(), command.amount());
+        return payment;
+    }
 
-        try { //결제승인 성공
-            tossPaymentPort.confirm(
-                    command.paymentKey(),
-                    command.paymentId(),
-                    command.amount()
-            );
-
-            payment.successPayment(command.paymentKey(), command.amount());
-            SucceededPaymentResult frontResult = SucceededPaymentResult.from(payment);
-            PaymentResponseResult result = PaymentResponseResult.from(payment);
-
-            walletPort.pointToWallet(result);
-            return frontResult;
-
-        } catch (PaymentException e) {
-            //결제승인 실패
-            FailPaymentCommand failCommand = new FailPaymentCommand(
-                    command.paymentId(),
-                    "CONFIRM_FAIL",
-                    e.getMessage()
-            );
-            failPayment(failCommand);
-            throw e;
-        }
+    @Transactional
+    public Payment markFail(FailPaymentCommand command) {
+        Payment payment = paymentRepository.findById(command.paymentId());
+        payment.failPayment(command.code(), command.message());
+        return payment;
     }
 
     @Override
