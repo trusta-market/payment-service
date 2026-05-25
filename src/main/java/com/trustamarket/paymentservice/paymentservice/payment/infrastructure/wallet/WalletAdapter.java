@@ -7,6 +7,7 @@ import com.trustamarket.paymentservice.paymentservice.payment.infrastructure.wal
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -19,13 +20,8 @@ public class WalletAdapter implements WalletPort {
 
     private final WalletFeignClient walletFeignClient;
 
-    @Retryable(
-            retryFor = FeignException.class,
-            maxAttempts = 3,
-            backoff = @Backoff(delay = 1000)
-    )
     @Override
-    public CommonResponse<Void> pointToWallet(PaymentResponseResult result){
+    public ResponseEntity<CommonResponse<Void>> pointToWallet(PaymentResponseResult result){
         PointWalletRequest request = new PointWalletRequest(
                 result.userId(),
                 result.paymentId(),
@@ -35,11 +31,5 @@ public class WalletAdapter implements WalletPort {
         );
 
         return walletFeignClient.pointToWallet(request);
-    }
-
-    @Recover
-    public CommonResponse<Void> recover(FeignException e, PaymentResponseResult result) {
-        log.error("[Wallet] 재시도 모두 실패. paymentId={}", result.paymentId(), e);
-        return CommonResponse.of(500, null);
     }
 }

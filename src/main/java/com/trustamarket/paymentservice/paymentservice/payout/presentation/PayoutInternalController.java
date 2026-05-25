@@ -8,6 +8,7 @@ import com.trustamarket.paymentservice.paymentservice.payout.presentation.dto.re
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,10 +22,10 @@ public class PayoutInternalController {
     private final PayoutUseCase payoutUseCase;
 
     @PostMapping
-    public CommonResponse<Void> createPayout(@Valid @RequestBody CreatePayoutRequest request){
+    public ResponseEntity<CommonResponse<Void>> createPayout(@Valid @RequestBody CreatePayoutRequest request){
         CreatePayoutCommand command = new CreatePayoutCommand(request.userId(), request.pointTxRequestHistoryId(), Amount.of(request.withdrawAmount()));
         payoutUseCase.createPayout(command);
 
-        return new CommonResponse<>(HttpStatus.NO_CONTENT.value(), null);
+        return ResponseEntity.ok(new CommonResponse<>(HttpStatus.OK.value(), null));
     }
 }
