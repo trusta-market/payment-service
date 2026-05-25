@@ -26,6 +26,6 @@ public class PayoutInternalController {
         CreatePayoutCommand command = new CreatePayoutCommand(request.userId(), request.pointTxRequestHistoryId(), Amount.of(request.withdrawAmount()));
         payoutUseCase.createPayout(command);
 
-        return ResponseEntity.ok(new CommonResponse<>(HttpStatus.OK.value(), null));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new CommonResponse<>(HttpStatus.CREATED.value(), null));
     }
 }
