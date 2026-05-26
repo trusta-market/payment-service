@@ -21,7 +21,7 @@ public class WalletAdapter implements WalletPort {
     private final WalletFeignClient walletFeignClient;
 
     @Override
-    public ResponseEntity<CommonResponse<Void>> pointToWallet(PaymentResponseResult result){
+    public void pointToWallet(PaymentResponseResult result){
         PointWalletRequest request = new PointWalletRequest(
                 result.userId(),
                 result.paymentId(),
@@ -30,6 +30,6 @@ public class WalletAdapter implements WalletPort {
                 result.amount()
         );
 
-        return walletFeignClient.pointToWallet(request);
+        walletFeignClient.pointToWallet(request);
     }
 }

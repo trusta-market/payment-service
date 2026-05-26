@@ -11,5 +11,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface WalletFeignClient {
 
     @PostMapping("/internal/v1/wallets/charges")
-    ResponseEntity<CommonResponse<Void>> pointToWallet(@RequestBody PointWalletRequest request);
+    ResponseEntity<Void> pointToWallet(@RequestBody PointWalletRequest request);
 }

@@ -22,10 +22,10 @@ public class PayoutInternalController {
     private final PayoutUseCase payoutUseCase;
 
     @PostMapping
-    public ResponseEntity<CommonResponse<Void>> createPayout(@Valid @RequestBody CreatePayoutRequest request){
+    public ResponseEntity<Void> createPayout(@Valid @RequestBody CreatePayoutRequest request){
         CreatePayoutCommand command = new CreatePayoutCommand(request.userId(), request.pointTxRequestHistoryId(), Amount.of(request.withdrawAmount()));
         payoutUseCase.createPayout(command);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new CommonResponse<>(HttpStatus.CREATED.value(), null));
+        return ResponseEntity.noContent().build();
     }
 }
