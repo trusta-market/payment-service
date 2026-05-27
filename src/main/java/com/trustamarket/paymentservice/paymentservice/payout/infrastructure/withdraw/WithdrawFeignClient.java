@@ -11,5 +11,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface WithdrawFeignClient {
 
     @PostMapping("/internal/v1/wallets/withdrawals")
-    ResponseEntity<CommonResponse<Void>> withdrawCompleted(@RequestBody WithdrawCompletedRequest request);
+    ResponseEntity<Void> withdrawCompleted(@RequestBody WithdrawCompletedRequest request);
 }
