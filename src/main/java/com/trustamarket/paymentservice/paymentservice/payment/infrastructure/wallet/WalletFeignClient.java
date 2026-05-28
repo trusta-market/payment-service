@@ -3,6 +3,7 @@ package com.trustamarket.paymentservice.paymentservice.payment.infrastructure.wa
 import com.trustamarket.common.response.CommonResponse;
 import com.trustamarket.paymentservice.paymentservice.payment.infrastructure.wallet.dto.PointWalletRequest;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -10,5 +11,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface WalletFeignClient {
 
     @PostMapping("/internal/v1/wallets/charges")
-    CommonResponse<Void> pointToWallet(@RequestBody PointWalletRequest request);
+    ResponseEntity<Void> pointToWallet(@RequestBody PointWalletRequest request);
 }

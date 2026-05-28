@@ -3,6 +3,7 @@ package com.trustamarket.paymentservice.paymentservice.payout.infrastructure.wit
 import com.trustamarket.common.response.CommonResponse;
 import com.trustamarket.paymentservice.paymentservice.payout.infrastructure.withdraw.dto.WithdrawCompletedRequest;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -10,5 +11,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface WithdrawFeignClient {
 
     @PostMapping("/internal/v1/wallets/withdrawals")
-    CommonResponse<Void> withdrawCompleted(@RequestBody WithdrawCompletedRequest request);
+    ResponseEntity<Void> withdrawCompleted(@RequestBody WithdrawCompletedRequest request);
 }

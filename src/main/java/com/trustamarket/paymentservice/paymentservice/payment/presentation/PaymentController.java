@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -44,7 +45,7 @@ public class PaymentController {
     private final PaymentFacadeUseCase paymentFacadeUseCase;
 
     @GetMapping("/{paymentId}/success")
-    public CommonResponse<SucceededPaymentResponse> successPayment(
+    public ResponseEntity<CommonResponse<SucceededPaymentResponse>> successPayment(
             @PathVariable @NotNull UUID paymentId,
             @RequestParam @NotBlank String paymentKey,
             @RequestParam @Positive long amount
@@ -53,11 +54,11 @@ public class PaymentController {
         SucceededPaymentResult result = paymentFacadeUseCase.succeededPayment(command);
         SucceededPaymentResponse response = SucceededPaymentResponse.from(result);
 
-        return new CommonResponse<>(HttpStatus.OK.value(), response);
+        return ResponseEntity.ok(new CommonResponse<>(HttpStatus.OK.value(), response));
     }
 
     @GetMapping("/{paymentId}/failure")
-    public CommonResponse<FailPaymentResponse> failPayment(
+    public ResponseEntity<CommonResponse<FailPaymentResponse>> failPayment(
             @PathVariable @NotNull UUID paymentId,
             @RequestParam @NotBlank String code,
             @RequestParam @NotBlank String message
@@ -67,12 +68,12 @@ public class PaymentController {
         FailPaymentResult result = paymentUseCase.failPayment(command);
         FailPaymentResponse response = FailPaymentResponse.from(result);
 
-        return new CommonResponse<>(HttpStatus.OK.value(), response);
+        return ResponseEntity.ok(new CommonResponse<>(HttpStatus.OK.value(), response));
     }
 
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping("/{paymentId}")
-    public CommonResponse<PaymentDetailResponse> paymentDetail(
+    public ResponseEntity<CommonResponse<PaymentDetailResponse>> paymentDetail(
             @PathVariable @NotNull UUID paymentId
     ){
         UUID userId = SecurityUtil.getCurrentUserIdOrThrow();
@@ -81,12 +82,12 @@ public class PaymentController {
         PaymentDetailResult result = paymentUseCase.getPaymentDetail(command);
         PaymentDetailResponse response = PaymentDetailResponse.from(result);
 
-        return new CommonResponse<>(HttpStatus.OK.value(), response);
+        return ResponseEntity.ok(new CommonResponse<>(HttpStatus.OK.value(), response));
     }
 
     @PreAuthorize("hasRole('MEMBER')")
     @GetMapping()
-    public SlicedResponse<SearchPaymentResponse> searchPayments(
+    public ResponseEntity<SlicedResponse<SearchPaymentResponse>> searchPayments(
             @ModelAttribute SearchPaymentRequest request,
             Pageable pageable
     ){
@@ -102,6 +103,6 @@ public class PaymentController {
         Slice<SearchPaymentResult> result = paymentUseCase.searchPayments(query, pageable);
         Slice<SearchPaymentResponse> response = result.map(SearchPaymentResponse::from);
 
-        return SlicedResponse.of(HttpStatus.OK.value(), response);
+        return ResponseEntity.ok(SlicedResponse.of(HttpStatus.OK.value(), response));
     }
 }

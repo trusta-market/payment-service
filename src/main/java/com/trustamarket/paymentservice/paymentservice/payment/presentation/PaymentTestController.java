@@ -10,6 +10,7 @@ import com.trustamarket.paymentservice.paymentservice.payment.presentation.dto.r
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +28,7 @@ public class PaymentTestController {
     private final PaymentUseCase paymentUseCase;
 
     @PostMapping("/{paymentId}/test")
-    public CommonResponse<SucceededPaymentResponse> testPayment(@PathVariable UUID paymentId){
+    public ResponseEntity<CommonResponse<SucceededPaymentResponse>> testPayment(@PathVariable UUID paymentId){
 
         PaymentInfoResult info = paymentUseCase.getPaymentInfo(paymentId);
         SucceededPaymentCommand command = new SucceededPaymentCommand(
@@ -37,9 +38,9 @@ public class PaymentTestController {
         );
 
         SucceededPaymentResult result = paymentFacade.succeededPayment(command);
-        return new CommonResponse<>(
+        return ResponseEntity.ok(new CommonResponse<>(
                 HttpStatus.OK.value(),
-                SucceededPaymentResponse.from(result)
+                SucceededPaymentResponse.from(result))
         );
     }
 }

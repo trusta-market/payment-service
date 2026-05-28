@@ -10,6 +10,7 @@ import com.trustamarket.paymentservice.paymentservice.payment.presentation.dto.r
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,12 +24,13 @@ public class PaymentInternalController {
     private final PaymentUseCase paymentUseCase;
 
     @PostMapping("/charges")
-    public CommonResponse<CreatePaymentResponse> createPayment(@Valid @RequestBody CreatePaymentRequest request) {
+    public ResponseEntity<CommonResponse<CreatePaymentResponse>> createPayment(@Valid @RequestBody CreatePaymentRequest request) {
 
         CreatePaymentCommand command = new CreatePaymentCommand(request.userId(), request.pointTxRequestHistoryId(), Amount.of(request.chargeAmount()));
         CreatePaymentResult result = paymentUseCase.createPayment(command);
         CreatePaymentResponse response = CreatePaymentResponse.from(result);
 
-        return new CommonResponse<>(HttpStatus.NO_CONTENT.value(), response);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new CommonResponse<>(HttpStatus.CREATED.value(), response));
     }
 }

@@ -7,6 +7,7 @@ import com.trustamarket.paymentservice.paymentservice.payout.infrastructure.user
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -28,8 +29,9 @@ public class UserAccountAdapter implements UserAccountPort {
     )
     @Override
     public UserAccount getUserAccount(UUID userId) {
-        CommonResponse<UserAccountResponse> response = userFeignClient.getUserAccount(userId);
-        UserAccountResponse data = response.data();
+        ResponseEntity<CommonResponse<UserAccountResponse>> response = userFeignClient.getUserAccount(userId);
+        CommonResponse<UserAccountResponse> body = response.getBody();
+        UserAccountResponse data = body.data();
 
         if(data == null){
             throw new IllegalStateException("유저의 계좌정보를 찾을 수 없습니다.");
