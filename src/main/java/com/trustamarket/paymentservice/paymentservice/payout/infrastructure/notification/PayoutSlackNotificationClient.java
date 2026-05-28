@@ -6,6 +6,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
 import java.util.Map;
 
 @Slf4j
@@ -18,7 +19,10 @@ public class PayoutSlackNotificationClient {
     private final RestTemplate restTemplate;
 
     public PayoutSlackNotificationClient(RestTemplateBuilder builder) {
-        this.restTemplate = builder.build();
+        this.restTemplate = builder
+                .connectTimeout(Duration.ofSeconds(3))
+                .readTimeout(Duration.ofSeconds(3))
+                .build();
     }
 
     public void send(String message) {
