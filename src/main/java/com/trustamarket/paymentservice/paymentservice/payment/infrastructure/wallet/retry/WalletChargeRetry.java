@@ -62,6 +62,7 @@ public class WalletChargeRetry extends BaseTimeEntity {
         retry.amount = result.amount();
         retry.status = RetryStatus.PENDING;
         retry.retryCount = 0;
+        retry.lastAttemptedAt = LocalDateTime.now();
         return retry;
     }
 

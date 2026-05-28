@@ -62,6 +62,7 @@ public class WalletWithdrawRetry extends BaseTimeEntity {
         retry.amount = result.payoutAmount();
         retry.status = RetryStatus.PENDING;
         retry.retryCount = 0;
+        retry.lastAttemptedAt = LocalDateTime.now();
         return retry;
     }
 

@@ -10,6 +10,6 @@ import java.util.UUID;
 
 public interface WalletWithdrawRetryJpaRepository extends JpaRepository<WalletWithdrawRetry, UUID> {
 
-    @Query("SELECT r FROM WalletWithdrawRetry r WHERE r.status = :status AND (r.lastAttemptedAt IS NULL OR r.lastAttemptedAt < :threshold)")
+    @Query("SELECT r FROM WalletWithdrawRetry r WHERE r.status = :status AND r.lastAttemptedAt < :threshold")
     List<WalletWithdrawRetry> findRetriable(@Param("status") RetryStatus status, @Param("threshold") LocalDateTime threshold);
 }
