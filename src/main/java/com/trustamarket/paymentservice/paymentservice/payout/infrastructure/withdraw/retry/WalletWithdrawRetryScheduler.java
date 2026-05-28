@@ -17,8 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WalletWithdrawRetryScheduler {
 
-    private static final int ALERT_THRESHOLD = 3;
-    private static final int MAX_RETRY = 5;
+    private static final int MAX_RETRY = 2;
 
     private final WalletWithdrawRetryJpaRepository retryRepository;
     private final WithdrawFeignClient withdrawFeignClient;
@@ -46,15 +45,9 @@ public class WalletWithdrawRetryScheduler {
                 retry.recordFailure();
                 log.error("[PayoutRetry] 재시도 실패. payoutId={}, retryCount={}", retry.getPayoutId(), retry.getRetryCount(), e);
 
-                if (retry.needsAdminAlert()) {
-                    slackClient.send(String.format(
-                            "[출금 알림 재시도 경고] wallet 전달 %d회 실패\npayoutId: %s\n확인이 필요합니다.",
-                            ALERT_THRESHOLD, retry.getPayoutId()
-                    ));
-                }
                 if (retry.getStatus() == RetryStatus.FAILED) {
                     slackClient.send(String.format(
-                            "[출금 알림 재시도 실패] wallet 전달 %d회 모두 실패\npayoutId: %s\n수동 처리가 필요합니다.",
+                            "[출금 알림 실패] wallet 전달 %d회 모두 실패\npayoutId: %s\n수동 처리가 필요합니다.",
                             MAX_RETRY, retry.getPayoutId()
                     ));
                 }

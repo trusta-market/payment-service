@@ -73,12 +73,8 @@ public class WalletWithdrawRetry extends BaseTimeEntity {
     public void recordFailure() {
         this.retryCount++;
         this.lastAttemptedAt = LocalDateTime.now();
-        if (this.retryCount >= 5) {
+        if (this.retryCount >= 2) {
             this.status = RetryStatus.FAILED;
         }
-    }
-
-    public boolean needsAdminAlert() {
-        return this.retryCount == 3;
     }
 }
