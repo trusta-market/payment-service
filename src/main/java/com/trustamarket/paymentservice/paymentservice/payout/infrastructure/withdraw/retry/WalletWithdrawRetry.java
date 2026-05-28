@@ -26,7 +26,7 @@ public class WalletWithdrawRetry extends BaseTimeEntity {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "payout_id", nullable = false)
+    @Column(name = "payout_id", unique = true, nullable = false)
     private UUID payoutId;
 
     @Column(name = "user_id", nullable = false)

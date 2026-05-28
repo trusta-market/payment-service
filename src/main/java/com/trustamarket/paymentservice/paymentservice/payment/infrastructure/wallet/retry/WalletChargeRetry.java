@@ -26,7 +26,7 @@ public class WalletChargeRetry extends BaseTimeEntity {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "payment_id", nullable = false)
+    @Column(name = "payment_id", unique = true, nullable = false)
     private UUID paymentId;
 
     @Column(name = "user_id", nullable = false)
