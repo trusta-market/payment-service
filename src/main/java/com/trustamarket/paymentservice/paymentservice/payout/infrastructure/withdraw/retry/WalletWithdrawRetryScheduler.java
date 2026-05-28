@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,15 +18,14 @@ public class WalletWithdrawRetryScheduler {
 
     private static final int MAX_RETRY = 2;
 
-    private final WalletWithdrawRetryJpaRepository retryRepository;
+    private final WalletWithdrawRetryProcessor processor;
     private final WithdrawFeignClient withdrawFeignClient;
     private final PayoutSlackNotificationClient slackClient;
 
     @Scheduled(fixedDelay = 300_000)
-    @Transactional
     public void process() {
         LocalDateTime threshold = LocalDateTime.now().minusMinutes(5);
-        List<WalletWithdrawRetry> targets = retryRepository.findRetriable(RetryStatus.PENDING, threshold);
+        List<WalletWithdrawRetry> targets = processor.findRetriable(threshold);
 
         for (WalletWithdrawRetry retry : targets) {
             try {
@@ -38,14 +36,14 @@ public class WalletWithdrawRetryScheduler {
                         retry.getPayoutStatus(),
                         retry.getAmount()
                 ));
-                retry.markSuccess();
-                log.info("[PayoutRetry] 전달 성공. payoutId={}", retry.getPayoutId());
+                processor.markSuccess(retry.getId());
+                log.info("[WithdrawRetry] 전달 성공. payoutId={}", retry.getPayoutId());
 
             } catch (Exception e) {
-                retry.recordFailure();
-                log.error("[PayoutRetry] 재시도 실패. payoutId={}, retryCount={}", retry.getPayoutId(), retry.getRetryCount(), e);
+                boolean isFailed = processor.recordFailure(retry.getId());
+                log.error("[WithdrawRetry] 재시도 실패. payoutId={}, retryCount={}", retry.getPayoutId(), retry.getRetryCount(), e);
 
-                if (retry.getStatus() == RetryStatus.FAILED) {
+                if (isFailed) {
                     slackClient.send(String.format(
                             "[출금 알림 실패] wallet 전달 %d회 모두 실패\npayoutId: %s\n수동 처리가 필요합니다.",
                             MAX_RETRY, retry.getPayoutId()
