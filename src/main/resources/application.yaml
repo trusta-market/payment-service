@@ -9,3 +9,6 @@ spring:
     config:
       label: ${SPRING_CLOUD_CONFIG_LABEL:develop}
       fail-fast: ${SPRING_CLOUD_CONFIG_FAIL_FAST:false}
+notification:
+  slack:
+    webhook-url: ${SLACK_WEBHOOK_URL}
