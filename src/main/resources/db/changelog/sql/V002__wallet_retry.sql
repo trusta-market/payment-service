@@ -13,8 +13,6 @@ CREATE TABLE IF NOT EXISTS p_wallet_charge_retry (
     CONSTRAINT pk_p_wallet_charge_retry PRIMARY KEY (id)
     );
 
-CREATE INDEX idx_wallet_charge_retry_status ON p_wallet_charge_retry (status);
-
 CREATE TABLE IF NOT EXISTS p_wallet_withdraw_retry (
     id                          UUID        NOT NULL,
     payout_id                   UUID        NOT NULL,
@@ -30,4 +28,3 @@ CREATE TABLE IF NOT EXISTS p_wallet_withdraw_retry (
     CONSTRAINT pk_p_wallet_payout_retry PRIMARY KEY (id)
     );
 
-CREATE INDEX idx_wallet_withdraw_retry_status ON p_wallet_withdraw_retry (status);
