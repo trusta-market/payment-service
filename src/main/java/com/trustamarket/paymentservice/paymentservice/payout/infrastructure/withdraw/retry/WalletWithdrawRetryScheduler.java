@@ -1,6 +1,6 @@
 package com.trustamarket.paymentservice.paymentservice.payout.infrastructure.withdraw.retry;
 
-import com.trustamarket.paymentservice.paymentservice.payout.infrastructure.notification.PayoutSlackNotificationClient;
+import com.trustamarket.paymentservice.paymentservice.payout.infrastructure.notification.PayoutNotificationClient;
 import com.trustamarket.paymentservice.paymentservice.payout.infrastructure.withdraw.WithdrawFeignClient;
 import com.trustamarket.paymentservice.paymentservice.payout.infrastructure.withdraw.dto.WithdrawCompletedRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class WalletWithdrawRetryScheduler {
 
     private final WalletWithdrawRetryProcessor processor;
     private final WithdrawFeignClient withdrawFeignClient;
-    private final PayoutSlackNotificationClient slackClient;
+    private final PayoutNotificationClient notificationClient;
 
     @Scheduled(fixedDelay = 300_000)
     public void process() {
@@ -44,7 +44,7 @@ public class WalletWithdrawRetryScheduler {
                 log.error("[WithdrawRetry] 재시도 실패. payoutId={}, retryCount={}", retry.getPayoutId(), retry.getRetryCount(), e);
 
                 if (isFailed) {
-                    slackClient.send(String.format(
+                    notificationClient.send(String.format(
                             "[출금 알림 실패] wallet 전달 %d회 모두 실패\npayoutId: %s\n수동 처리가 필요합니다.",
                             MAX_RETRY, retry.getPayoutId()
                     ));

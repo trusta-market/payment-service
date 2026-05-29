@@ -1,6 +1,6 @@
 package com.trustamarket.paymentservice.paymentservice.payment.infrastructure.wallet.retry;
 
-import com.trustamarket.paymentservice.paymentservice.payment.infrastructure.notification.PaymentSlackNotificationClient;
+import com.trustamarket.paymentservice.paymentservice.payment.infrastructure.notification.PaymentNotificationClient;
 import com.trustamarket.paymentservice.paymentservice.payment.infrastructure.wallet.WalletFeignClient;
 import com.trustamarket.paymentservice.paymentservice.payment.infrastructure.wallet.dto.PointWalletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class WalletChargeRetryScheduler {
 
     private final WalletChargeRetryProcessor processor;
     private final WalletFeignClient walletFeignClient;
-    private final PaymentSlackNotificationClient slackClient;
+    private final PaymentNotificationClient notificationClient;
 
     @Scheduled(fixedDelay = 300_000)
     public void process() {
@@ -44,7 +44,7 @@ public class WalletChargeRetryScheduler {
                 log.error("[ChargeRetry] 재시도 실패. paymentId={}, retryCount={}", retry.getPaymentId(), retry.getRetryCount(), e);
 
                 if (isFailed) {
-                    slackClient.send(String.format(
+                    notificationClient.send(String.format(
                             "[결제 알림 실패] wallet 전달 %d회 모두 실패\npaymentId: %s\n수동 처리가 필요합니다.",
                             MAX_RETRY, retry.getPaymentId()
                     ));
