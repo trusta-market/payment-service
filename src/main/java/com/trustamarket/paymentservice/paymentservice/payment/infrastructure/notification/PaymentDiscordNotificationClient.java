@@ -1,4 +1,4 @@
-package com.trustamarket.paymentservice.paymentservice.payout.infrastructure.notification;
+package com.trustamarket.paymentservice.paymentservice.payment.infrastructure.notification;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,14 +11,14 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class PayoutDiscordNotification implements PayoutNotificationClient {
+public class PaymentDiscordNotificationClient implements PaymentNotification {
 
     @Value("${notification.discord.webhook-url}")
     private String webhookUrl;
 
     private final RestTemplate restTemplate;
 
-    public PayoutDiscordNotification(RestTemplateBuilder builder) {
+    public PaymentDiscordNotificationClient(RestTemplateBuilder builder) {
         this.restTemplate = builder
                 .connectTimeout(Duration.ofSeconds(3))
                 .readTimeout(Duration.ofSeconds(3))

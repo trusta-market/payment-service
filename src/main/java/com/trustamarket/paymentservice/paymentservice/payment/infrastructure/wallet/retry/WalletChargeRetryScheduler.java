@@ -1,6 +1,6 @@
 package com.trustamarket.paymentservice.paymentservice.payment.infrastructure.wallet.retry;
 
-import com.trustamarket.paymentservice.paymentservice.payment.infrastructure.notification.PaymentNotificationClient;
+import com.trustamarket.paymentservice.paymentservice.payment.infrastructure.notification.PaymentNotification;
 import com.trustamarket.paymentservice.paymentservice.payment.infrastructure.wallet.WalletFeignClient;
 import com.trustamarket.paymentservice.paymentservice.payment.infrastructure.wallet.dto.PointWalletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class WalletChargeRetryScheduler {
 
     private final WalletChargeRetryProcessor processor;
     private final WalletFeignClient walletFeignClient;
-    private final PaymentNotificationClient notificationClient;
+    private final PaymentNotification notificationClient;
 
     @Scheduled(fixedDelay = 300_000)
     public void process() {

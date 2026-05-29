@@ -1,6 +1,6 @@
 package com.trustamarket.paymentservice.paymentservice.payout.infrastructure.withdraw.retry;
 
-import com.trustamarket.paymentservice.paymentservice.payout.infrastructure.notification.PayoutNotificationClient;
+import com.trustamarket.paymentservice.paymentservice.payout.infrastructure.notification.PayoutNotification;
 import com.trustamarket.paymentservice.paymentservice.payout.infrastructure.withdraw.WithdrawFeignClient;
 import com.trustamarket.paymentservice.paymentservice.payout.infrastructure.withdraw.dto.WithdrawCompletedRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class WalletWithdrawRetryScheduler {
 
     private final WalletWithdrawRetryProcessor processor;
     private final WithdrawFeignClient withdrawFeignClient;
-    private final PayoutNotificationClient notificationClient;
+    private final PayoutNotification notificationClient;
 
     @Scheduled(fixedDelay = 300_000)
     public void process() {
