@@ -34,7 +34,7 @@ public class PayoutDiscordNotification implements PayoutNotificationClient {
         try {
             restTemplate.postForEntity(webhookUrl, Map.of("content", message), Void.class);
         } catch (Exception e) {
-            log.error("[Discord] 알림 전송 실패. message={}", message, e);
+            log.error("[Discord] 알림 전송 실패. message={}, cause={}", message, e.getClass().getSimpleName());
         }
     }
 }
