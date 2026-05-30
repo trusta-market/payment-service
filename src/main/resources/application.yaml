@@ -9,3 +9,6 @@ spring:
     config:
       label: ${SPRING_CLOUD_CONFIG_LABEL:develop}
       fail-fast: ${SPRING_CLOUD_CONFIG_FAIL_FAST:false}
+notification:
+  discord:
+    webhook-url: ${DISCORD_WEBHOOK_URL}
