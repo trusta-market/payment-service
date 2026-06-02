@@ -31,13 +31,12 @@ public class UserAccountAdapter implements UserAccountPort {
     public UserAccount getUserAccount(UUID userId) {
         ResponseEntity<CommonResponse<UserAccountResponse>> response = userFeignClient.getUserAccount(userId);
         CommonResponse<UserAccountResponse> body = response.getBody();
-        UserAccountResponse data = body.data();
+        UserAccountResponse data = body != null ? body.data() : null;
 
-        if(data == null){
+        if (data == null) {
             throw new IllegalStateException("유저의 계좌정보를 찾을 수 없습니다.");
         }
-        if(!data.userId().equals(userId)) {
-            log.error(data.toString());
+        if (!data.userId().equals(userId)) {
             throw new IllegalStateException("유저정보가 일치하지 않습니다.");
         }
 
@@ -48,9 +47,17 @@ public class UserAccountAdapter implements UserAccountPort {
                 data.isVerified()
         );
     }
+
     @Recover
     public UserAccount recover(FeignException e, UUID userId) {
         log.error("[User] 재시도 모두 실패. userId={}", userId, e);
         throw new IllegalStateException("유저 정보 조회 실패");
+    }
+
+    // FeignException이 아닌 예외(ISE, NPE 등)가 발생한 경우 그대로 전파
+    @Recover
+    public UserAccount recover(Exception e, UUID userId) {
+        if (e instanceof RuntimeException re) throw re;
+        throw new IllegalStateException(e.getMessage(), e);
     }
 }
