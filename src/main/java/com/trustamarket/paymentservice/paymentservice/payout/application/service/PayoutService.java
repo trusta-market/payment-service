@@ -41,7 +41,7 @@ public class PayoutService implements PayoutUseCase {
     @Transactional
     public Payout success(UUID payoutId){
         Payout payout = payoutRepository.findById(payoutId);
-        if (payout.getStatus() != PayoutStatus.REQUESTED) {
+        if (payout.getStatus() != PayoutStatus.PROCESSING) {
             return payout;
         }
 
@@ -52,7 +52,7 @@ public class PayoutService implements PayoutUseCase {
     @Transactional
     public Payout fail(UUID payoutId, String reason){
         Payout payout = payoutRepository.findById(payoutId);
-        if (payout.getStatus() != PayoutStatus.REQUESTED) {
+        if (payout.getStatus() != PayoutStatus.PROCESSING) {
             return payout;
         }
 

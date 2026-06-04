@@ -6,6 +6,7 @@ import com.trustamarket.paymentservice.paymentservice.payout.domain.repository.P
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,7 +28,14 @@ public class PayoutRepositoryAdapter implements PayoutRepository {
     }
 
     @Override
-    public List<Payout> findRequestedPayouts(int limit) {
-        return payoutJpaRepository.findByStatus(PayoutStatus.REQUESTED, PageRequest.of(0, limit));
+    @Transactional
+    public List<Payout> findProcessingPayouts(int limit) {
+        List<UUID> ids = payoutJpaRepository.findByStatus(PayoutStatus.REQUESTED, PageRequest.of(0, limit))
+                .stream().map(Payout::getPayoutId).toList();
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+        payoutJpaRepository.updateStatusToProcessing(ids);
+        return payoutJpaRepository.findByStatusAndPayoutIdIn(PayoutStatus.PROCESSING, ids);
     }
 }

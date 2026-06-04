@@ -20,14 +20,13 @@ public class PayoutScheduler {
     private final PayoutRepository payoutRepository;
     private final PayoutProcessor payoutProcessor;
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedRate = 5000)
     public void process() {
-        List<Payout> payouts = payoutRepository.findRequestedPayouts(BATCH_SIZE);
+        List<Payout> payouts = payoutRepository.findProcessingPayouts(BATCH_SIZE);
         if (payouts.isEmpty()) {
             return;
         }
 
-        log.info("[PayoutScheduler] 처리 대상 {}건", payouts.size());
         for (Payout payout : payouts) {
             payoutProcessor.process(payout.getPayoutId());
         }

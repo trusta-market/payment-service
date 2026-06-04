@@ -30,7 +30,7 @@ public class PayoutProcessor {
     public void process(UUID payoutId) {
         Payout payout = payoutRepository.findById(payoutId);
 
-        if (payout.getStatus() != PayoutStatus.REQUESTED) {
+        if (payout.getStatus() != PayoutStatus.PROCESSING) {
             log.warn("[Payout] 이미 처리된 요청. payoutId={}, status={}", payout.getPayoutId(), payout.getStatus());
             return;
         }
