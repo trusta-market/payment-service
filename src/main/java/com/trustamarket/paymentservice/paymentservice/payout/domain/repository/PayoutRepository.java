@@ -8,4 +8,5 @@ import java.util.UUID;
 public interface PayoutRepository {
     Payout saveAndFlush(Payout payout);
     Payout findById(UUID payoutId);
+    List<Payout> findRequestedPayouts(int limit);
 }
