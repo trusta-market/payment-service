@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.List;
 
 @Slf4j
@@ -30,5 +31,10 @@ public class PayoutScheduler {
         for (Payout payout : payouts) {
             payoutProcessor.process(payout.getPayoutId());
         }
+    }
+
+    @Scheduled(fixedDelay = 60000)
+    public void recover() {
+        payoutRepository.resetToRequested(Instant.now().minusSeconds(180));
     }
 }

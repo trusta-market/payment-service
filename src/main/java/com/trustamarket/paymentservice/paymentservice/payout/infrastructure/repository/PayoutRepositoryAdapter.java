@@ -5,9 +5,11 @@ import com.trustamarket.paymentservice.paymentservice.payout.domain.enums.Payout
 import com.trustamarket.paymentservice.paymentservice.payout.domain.repository.PayoutRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,8 +31,14 @@ public class PayoutRepositoryAdapter implements PayoutRepository {
 
     @Override
     @Transactional
+    public void resetToRequested(Instant threshold) {
+        payoutJpaRepository.resetToRequested(threshold);
+    }
+
+    @Override
+    @Transactional
     public List<Payout> findProcessingPayouts(int limit) {
-        List<UUID> ids = payoutJpaRepository.findByStatus(PayoutStatus.REQUESTED, PageRequest.of(0, limit))
+        List<UUID> ids = payoutJpaRepository.findByStatus(PayoutStatus.REQUESTED, PageRequest.of(0, limit, Sort.by("createdAt").ascending()))
                 .stream().map(Payout::getPayoutId).toList();
         if (ids.isEmpty()) {
             return List.of();
