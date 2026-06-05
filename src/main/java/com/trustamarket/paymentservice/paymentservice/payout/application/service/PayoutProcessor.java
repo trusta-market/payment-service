@@ -1,6 +1,5 @@
 package com.trustamarket.paymentservice.paymentservice.payout.application.service;
 
-import com.trustamarket.paymentservice.paymentservice.payout.application.event.PayoutRequestedEvent;
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.pgClient.PgClientPort;
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.pgClient.PgPayoutRequest;
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.out.pgClient.PgPayoutResult;
@@ -13,14 +12,14 @@ import com.trustamarket.paymentservice.paymentservice.payout.domain.enums.Payout
 import com.trustamarket.paymentservice.paymentservice.payout.domain.repository.PayoutRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.event.TransactionalEventListener;
+
+import java.util.UUID;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PayoutEventHandler {
+public class PayoutProcessor {
 
     private final PayoutRepository payoutRepository;
     private final PayoutService payoutService;
@@ -28,20 +27,17 @@ public class PayoutEventHandler {
     private final PgClientPort pgClientPort;
     private final WalletPort walletPort;
 
-    @Async
-    @TransactionalEventListener
-    public void handle(PayoutRequestedEvent event) {
-        Payout payout = payoutRepository.findById(event.payoutId());
+    public void process(UUID payoutId) {
+        Payout payout = payoutRepository.findById(payoutId);
 
-        if (payout.getStatus() != PayoutStatus.REQUESTED) {
-            log.warn("[Payout] 이미 처리된 요청. payoutId={}, status={}",
-                    payout.getPayoutId(), payout.getStatus());
+        if (payout.getStatus() != PayoutStatus.PROCESSING) {
+            log.warn("[Payout] 이미 처리된 요청. payoutId={}, status={}", payout.getPayoutId(), payout.getStatus());
             return;
         }
 
         try {
             UserAccount account = userAccountPort.getUserAccount(payout.getUserId());
-            if(!account.isVerified()){
+            if (!account.isVerified()) {
                 payout = payoutService.fail(payout.getPayoutId(), "출금 계좌 인증이 완료되지 않았습니다.");
                 notifyWalletSafely(payout);
                 return;
@@ -59,8 +55,7 @@ public class PayoutEventHandler {
             notifyWalletSafely(payout);
 
         } catch (Exception e) {
-            log.error("[Payout] 처리 실패. payoutId={}", payout.getPayoutId(), e);
-
+            log.error("[Payout] 처리 실패. payoutId={}", payoutId, e);
             payout = payoutService.fail(payout.getPayoutId(), e.getMessage());
             notifyWalletSafely(payout);
         }
@@ -68,11 +63,9 @@ public class PayoutEventHandler {
 
     private void notifyWalletSafely(Payout payout) {
         try {
-            PayoutCompletedResult result = PayoutCompletedResult.from(payout);
-            walletPort.payoutCompleted(result);
+            walletPort.payoutCompleted(PayoutCompletedResult.from(payout));
         } catch (Exception e) {
-            log.error("[Wallet] 출금 결과 알림 실패. payoutId={}, status={}",
-                    payout.getPayoutId(), payout.getStatus(), e);
+            log.error("[Wallet] 출금 결과 알림 실패. payoutId={}, status={}", payout.getPayoutId(), payout.getStatus(), e);
         }
     }
 }
