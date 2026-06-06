@@ -81,6 +81,11 @@ spec:
                 secretKeyRef:
                   name: payment-secrets
                   key: TOSS_CUSTOMER_KEY
+            - name: DISCORD_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: payment-secrets
+                  key: DISCORD_WEBHOOK_URL
           # 부하 측정 시 일관된 환경 위해 limit 제거 (variable 줄임). burst 시 노드 free 까지 사용 — 터져도 OK.
           # request 만 유지 (스케줄링 위해).
           resources:
