@@ -71,7 +71,7 @@ public class Payout extends BaseTimeEntity {
     }
 
     public void complete() {
-        if (this.status != PayoutStatus.PROCESSING) {
+        if (this.status != PayoutStatus.REQUESTED) {
             throw new PayoutException(PayoutErrorCode.INVALID_PAYOUT_STATUS);
         }
         this.status = PayoutStatus.SUCCESS;
@@ -80,7 +80,7 @@ public class Payout extends BaseTimeEntity {
     }
 
     public void fail(String reason) {
-        if (this.status != PayoutStatus.PROCESSING) {
+        if (this.status != PayoutStatus.REQUESTED) {
             throw new PayoutException(PayoutErrorCode.INVALID_PAYOUT_STATUS);
         }
         this.status = PayoutStatus.FAILED;
