@@ -15,8 +15,8 @@ public class AsyncConfig {
     public ThreadPoolTaskExecutor payoutTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(10);
-        executor.setMaxPoolSize(50);
-        executor.setQueueCapacity(500);           // 큐 사이즈 늘리기
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(500);
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy()); // AbortPolicy 대신
         executor.setThreadNamePrefix("payout-async-");
         executor.initialize();
