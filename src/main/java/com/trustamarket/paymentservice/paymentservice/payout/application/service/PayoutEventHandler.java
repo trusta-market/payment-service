@@ -28,20 +28,23 @@ public class PayoutEventHandler {
     private final PgClientPort pgClientPort;
     private final WalletPort walletPort;
 
-    @Async
+    @Async("payoutTaskExecutor")
     @TransactionalEventListener
     public void handle(PayoutRequestedEvent event) {
-        Payout payout = payoutRepository.findById(event.payoutId());
-
-        if (payout.getStatus() != PayoutStatus.REQUESTED) {
-            log.warn("[Payout] 이미 처리된 요청. payoutId={}, status={}",
-                    payout.getPayoutId(), payout.getStatus());
-            return;
-        }
+        Payout payout = null;
 
         try {
+            payout = payoutRepository.findById(event.payoutId());
+
+            if (payout.getStatus() != PayoutStatus.REQUESTED) {
+                log.warn("[Payout] 이미 처리된 요청. payoutId={}, status={}",
+                    payout.getPayoutId(), payout.getStatus());
+                return;
+            }
+
             UserAccount account = userAccountPort.getUserAccount(payout.getUserId());
-            if(!account.isVerified()){
+
+            if (!account.isVerified()) {
                 payout = payoutService.fail(payout.getPayoutId(), "출금 계좌 인증이 완료되지 않았습니다.");
                 notifyWalletSafely(payout);
                 return;
@@ -59,10 +62,14 @@ public class PayoutEventHandler {
             notifyWalletSafely(payout);
 
         } catch (Exception e) {
-            log.error("[Payout] 처리 실패. payoutId={}", payout.getPayoutId(), e);
+            log.error("[Payout] 처리 실패. payoutId={}", event.payoutId(), e);
 
-            payout = payoutService.fail(payout.getPayoutId(), e.getMessage());
-            notifyWalletSafely(payout);
+            try {
+                payout = payoutService.fail(event.payoutId(), e.getMessage());
+                notifyWalletSafely(payout);
+            } catch (Exception failException) {
+                log.error("[Payout] 실패 상태 저장도 실패. payoutId={}", event.payoutId(), failException);
+            }
         }
     }
 
