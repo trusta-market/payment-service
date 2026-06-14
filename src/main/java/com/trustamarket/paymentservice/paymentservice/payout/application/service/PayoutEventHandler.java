@@ -28,7 +28,7 @@ public class PayoutEventHandler {
     private final PgClientPort pgClientPort;
     private final WalletPort walletPort;
 
-    @Async("payoutTaskExecutor")
+    @Async
     @TransactionalEventListener
     public void handle(PayoutRequestedEvent event) {
         Payout payout = null;
