@@ -3,8 +3,11 @@ package com.trustamarket.paymentservice.paymentservice.payment.infrastructure.re
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.query.PaymentSearchQuery;
+import com.trustamarket.paymentservice.paymentservice.payment.application.dto.query.PaymentTxSearchQuery;
 import com.trustamarket.paymentservice.paymentservice.payment.domain.entity.Payment;
+import com.trustamarket.paymentservice.paymentservice.payment.domain.entity.PaymentTx;
 import com.trustamarket.paymentservice.paymentservice.payment.domain.entity.QPayment;
+import com.trustamarket.paymentservice.paymentservice.payment.domain.entity.QPaymentTx;
 import com.trustamarket.paymentservice.paymentservice.payment.domain.exception.PaymentErrorCode;
 import com.trustamarket.paymentservice.paymentservice.payment.domain.exception.PaymentException;
 import com.trustamarket.paymentservice.paymentservice.payment.domain.repository.PaymentRepository;
@@ -55,6 +58,39 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
 
         List<Payment> results = queryFactory
                 .selectFrom(payment)
+                .where(builder)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1L)
+                .fetch();
+
+        boolean hasNext = results.size() > pageable.getPageSize();
+        if (hasNext) {
+            results.remove(results.size() - 1);
+        }
+
+        return new SliceImpl<>(results, pageable, hasNext);
+    }
+
+    @Override
+    public Slice<PaymentTx> searchPaymentTxs(PaymentTxSearchQuery query, Pageable pageable) {
+        QPaymentTx paymentTx = QPaymentTx.paymentTx;
+
+        BooleanBuilder builder = new BooleanBuilder();
+        if (query.userId() != null) {
+            builder.and(paymentTx.userId.eq(query.userId()));
+        }
+        if (query.txType() != null) {
+            builder.and(paymentTx.txType.eq(query.txType()));
+        }
+        if (query.minAmount() != 0 || query.maxAmount() != Long.MAX_VALUE) {
+            builder.and(paymentTx.amount.between(query.minAmount(), query.maxAmount()));
+        }
+        if (query.pgResponseCode() != null) {
+            builder.and(paymentTx.pgResponseCode.eq(query.pgResponseCode()));
+        }
+
+        List<PaymentTx> results = queryFactory
+                .selectFrom(paymentTx)
                 .where(builder)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1L)
