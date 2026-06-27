@@ -59,6 +59,7 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
         List<Payment> results = queryFactory
                 .selectFrom(payment)
                 .where(builder)
+                .orderBy(payment.createdAt.desc(), payment.paymentId.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1L)
                 .fetch();
@@ -92,6 +93,7 @@ public class PaymentRepositoryAdapter implements PaymentRepository {
         List<PaymentTx> results = queryFactory
                 .selectFrom(paymentTx)
                 .where(builder)
+                .orderBy(paymentTx.createdAt.desc(), paymentTx.paymentId.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1L)
                 .fetch();
