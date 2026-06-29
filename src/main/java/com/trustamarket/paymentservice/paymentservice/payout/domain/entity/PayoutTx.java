@@ -32,6 +32,9 @@ public class PayoutTx extends BaseCreatedEntity {
     @JoinColumn(name = "payout_id", nullable = false)
     private Payout payout;
 
+    @Column(name = "user_id", nullable = false, updatable = false)
+    private UUID userId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "tx_type", nullable = false, length = 30, updatable = false)
     private PayoutTxType txType;
@@ -42,25 +45,28 @@ public class PayoutTx extends BaseCreatedEntity {
     @Column(name = "failure_reason", length = 255)
     private String failureReason;
 
-    public static PayoutTx createRequest(Amount amount) {
+    public static PayoutTx createRequest(UUID userId, Amount amount) {
         PayoutTx tx = new PayoutTx();
         tx.payoutTxId = UUID.randomUUID();
+        tx.userId = userId;
         tx.txType = PayoutTxType.REQUESTED;
         tx.amount = amount.value();
         return tx;
     }
 
-    public static PayoutTx createSuccess(Amount amount) {
+    public static PayoutTx createSuccess(UUID userId, Amount amount) {
         PayoutTx tx = new PayoutTx();
         tx.payoutTxId = UUID.randomUUID();
+        tx.userId = userId;
         tx.txType = PayoutTxType.SUCCESS;
         tx.amount = amount.value();
         return tx;
     }
 
-    public static PayoutTx createFail(Amount amount, String failureReason) {
+    public static PayoutTx createFail(UUID userId, Amount amount, String failureReason) {
         PayoutTx tx = new PayoutTx();
         tx.payoutTxId = UUID.randomUUID();
+        tx.userId = userId;
         tx.txType = PayoutTxType.FAILED;
         tx.amount = amount.value();
         tx.failureReason = failureReason;
