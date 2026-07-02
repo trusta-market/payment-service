@@ -21,6 +21,7 @@ public class DevSecurityConfig {
                 .securityMatcher(
                         "/api/v1/payments/*/success",
                         "/api/v1/payments/*/failure",
+                        "/api/v1/admin/**",
                         "/demo/**",
                         "/css/**",
                         "/favicon.ico",

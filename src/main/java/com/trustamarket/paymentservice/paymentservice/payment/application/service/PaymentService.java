@@ -5,11 +5,14 @@ import com.trustamarket.paymentservice.paymentservice.payment.application.dto.co
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.command.SucceededPaymentCommand;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.query.PaymentDetailQuery;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.query.PaymentSearchQuery;
+import com.trustamarket.paymentservice.paymentservice.payment.application.dto.query.PaymentTxSearchQuery;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.CreatePaymentResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.FailPaymentResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.PaymentDetailResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.PaymentInfoResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.SearchPaymentResult;
+import com.trustamarket.paymentservice.paymentservice.payment.application.dto.result.SearchPaymentTxResult;
+import com.trustamarket.paymentservice.paymentservice.payment.domain.entity.PaymentTx;
 import com.trustamarket.paymentservice.paymentservice.payment.application.port.PaymentResponseResult;
 import com.trustamarket.paymentservice.paymentservice.payment.application.port.PaymentUseCase;
 import com.trustamarket.paymentservice.paymentservice.payment.application.port.TossPaymentPort;
@@ -96,6 +99,13 @@ public class PaymentService implements PaymentUseCase {
     public Slice<SearchPaymentResult> searchPayments(PaymentSearchQuery query, Pageable pageable) {
         Slice<Payment> payments = paymentRepository.searchPayments(query, pageable);
         return payments.map(SearchPaymentResult::from);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<SearchPaymentTxResult> searchPaymentTxs(PaymentTxSearchQuery query, Pageable pageable) {
+        Slice<PaymentTx> txs = paymentRepository.searchPaymentTxs(query, pageable);
+        return txs.map(SearchPaymentTxResult::from);
     }
 
     @Override
