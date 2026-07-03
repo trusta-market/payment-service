@@ -1,10 +1,15 @@
 package com.trustamarket.paymentservice.paymentservice.payout.application.service;
 
 import com.trustamarket.paymentservice.paymentservice.payout.application.dto.command.CreatePayoutCommand;
+import com.trustamarket.paymentservice.paymentservice.payout.application.dto.query.PayoutSearchQuery;
+import com.trustamarket.paymentservice.paymentservice.payout.application.dto.query.PayoutTxSearchQuery;
 import com.trustamarket.paymentservice.paymentservice.payout.application.dto.result.CreatePayoutResult;
+import com.trustamarket.paymentservice.paymentservice.payout.application.dto.result.SearchPayoutResult;
+import com.trustamarket.paymentservice.paymentservice.payout.application.dto.result.SearchPayoutTxResult;
 import com.trustamarket.paymentservice.paymentservice.payout.application.event.PayoutRequestedEvent;
 import com.trustamarket.paymentservice.paymentservice.payout.application.port.in.PayoutUseCase;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.entity.Payout;
+import com.trustamarket.paymentservice.paymentservice.payout.domain.entity.PayoutTx;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.enums.PayoutStatus;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.PayoutErrorCode;
 import com.trustamarket.paymentservice.paymentservice.payout.domain.exception.PayoutException;
@@ -12,6 +17,8 @@ import com.trustamarket.paymentservice.paymentservice.payout.domain.repository.P
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +70,30 @@ public class PayoutService implements PayoutUseCase {
 
         payout.fail(reason);
         return payout;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SearchPayoutResult getPayoutDetail(UUID payoutId, UUID userId) {
+        Payout payout = payoutRepository.findById(payoutId);
+        if (!payout.getUserId().equals(userId)) {
+            throw new PayoutException(PayoutErrorCode.PAYOUT_NOT_FOUND);
+        }
+        return SearchPayoutResult.from(payout);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<SearchPayoutResult> searchPayouts(PayoutSearchQuery query, Pageable pageable) {
+        Slice<Payout> payouts = payoutRepository.searchPayouts(query, pageable);
+        return payouts.map(SearchPayoutResult::from);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Slice<SearchPayoutTxResult> searchPayoutTxs(PayoutTxSearchQuery query, Pageable pageable) {
+        Slice<PayoutTx> txs = payoutRepository.searchPayoutTxs(query, pageable);
+        return txs.map(SearchPayoutTxResult::from);
     }
 
 }

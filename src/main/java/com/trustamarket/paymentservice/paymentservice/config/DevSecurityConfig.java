@@ -22,6 +22,7 @@ public class DevSecurityConfig {
                         "/api/v1/payments/*/success",
                         "/api/v1/payments/*/failure",
                         "/api/v1/admin/**",
+                        "/api/v1/payouts/**",
                         "/demo/**",
                         "/css/**",
                         "/favicon.ico",

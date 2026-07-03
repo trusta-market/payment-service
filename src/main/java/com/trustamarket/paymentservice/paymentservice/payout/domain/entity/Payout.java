@@ -66,7 +66,7 @@ public class Payout extends BaseTimeEntity {
         payout.amount = amount.value();
         payout.status = PayoutStatus.REQUESTED;
 
-        payout.addTransaction(PayoutTx.createRequest(amount));
+        payout.addTransaction(PayoutTx.createRequest(userId, amount));
         return payout;
     }
 
@@ -76,7 +76,7 @@ public class Payout extends BaseTimeEntity {
         }
         this.status = PayoutStatus.SUCCESS;
 
-        this.addTransaction(PayoutTx.createSuccess(Amount.of(this.amount)));
+        this.addTransaction(PayoutTx.createSuccess(this.userId, Amount.of(this.amount)));
     }
 
     public void fail(String reason) {
@@ -85,7 +85,7 @@ public class Payout extends BaseTimeEntity {
         }
         this.status = PayoutStatus.FAILED;
 
-        this.addTransaction(PayoutTx.createFail(Amount.of(this.amount), failureReasonSize(reason)));
+        this.addTransaction(PayoutTx.createFail(this.userId, Amount.of(this.amount), failureReasonSize(reason)));
     }
 
     private String  failureReasonSize(String reason) {
